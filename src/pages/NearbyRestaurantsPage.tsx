@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
+import { popularRestaurants } from '../data/mockData';
 
 // ---- Data (extracted from Stitch HTML) ----
 interface NearbyRestaurant {
@@ -16,47 +17,17 @@ interface NearbyRestaurant {
   promos: Array<{ text: string; color: 'primary' | 'tertiary' }>;
 }
 
-const nearbyRestaurants: NearbyRestaurant[] = [
-  {
-    id: 'n1',
-    name: 'Gourmet Burger Kitchen',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCl07jc1R_1oiEzkm9kjHuN42-o3kYkYMzy-TPgQey-F5FJ8XJ3Hho2nj_amcemDsNBpHwrmD6v5CwF3mzXq2HZv3Itk9Z6IWryjCNiMsVa1LnaHmoZ0cp_0S6-0YtlDyaYRH20RlUNtYE2bmidCAK3PScbJurCtReIYMxBik0qfvfTtLBeN2_srqtUj34B1Nx8Ze-cYU1f4Uaf4l4pEcj_zXAlBeXAzLPIvrHxCINg6sdAAl0FrAnbzxHUnWH_pt7x91slj_YAFGUC',
-    rating: 4.8,
-    reviewCount: '1.2k+',
-    distance: '1.2 km',
-    deliveryTime: '15-25 min',
-    tags: ['Burgers', 'American', 'Premium'],
-    promos: [
-      { text: '40% OFF', color: 'primary' },
-      { text: 'FREE DELIVERY', color: 'tertiary' },
-    ],
-  },
-  {
-    id: 'n2',
-    name: 'Napoli Pizza House',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCHlGikLCT1MIWUkvUhLCIvxN_eILU1F90DFfakAWfeF4vMEfEmAH3LcnCI-lDot_qeZpgQJiJEoArlP8L18fZrHS6XUqbunmjkdnGru_wlvT9xgfpWDYauNz3ljs_v0v_I5dTmNK0A8ig9qT-zWfOKANeKQRcBKQc7jNPylyuwLAp3TeCEbXgXNCrkrDkUnN-T64SvVS8GeFsfm-C1RhJMeI_gJEtBcWWkMW0EUsBoopZXX4muHhY1sp0plH1Hs7Rj4qn9Ra5V0GnJ',
-    rating: 4.6,
-    reviewCount: '850',
-    distance: '0.8 km',
-    deliveryTime: '10-20 min',
-    tags: ['Italian', 'Pizza'],
-    promos: [{ text: 'BUY 1 GET 1', color: 'primary' }],
-  },
-  {
-    id: 'n3',
-    name: 'Sushiya Express',
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBcsJmZvwZn_RQpnCs1h9G8IvfpG96K2NpvUqPxgwY0VXoXn-QffVQ8_fXtEndohawCbSNCwfLd-MQrTSMzJYJENWfPhBXEYbREwzszdQFD4rE-MVq9IUSNnYYLMX1pl5MyflIXgKu2a8DuSJuHR8qQDGeTfCj46JVMdkUcdJ6pE6ACtgjxfQOkidkAHMzo9iDsoVmBCKxsTie6Tk4jAel5_2hzwEH4xCAsNAM6UQDap8agl0LVSJYqeLQLujZBvbqQhAudoYGuoXVO',
-    rating: 4.9,
-    reviewCount: '2.4k',
-    distance: '2.5 km',
-    deliveryTime: '30-45 min',
-    tags: ['Japanese', 'Healthy'],
-    promos: [{ text: 'PROMO CODE', color: 'tertiary' }],
-  },
-];
+const nearbyRestaurants: NearbyRestaurant[] = popularRestaurants.map(r => ({
+  id: r.id,
+  name: r.name,
+  imageUrl: r.imageUrl,
+  rating: r.rating,
+  reviewCount: '1k+',
+  distance: r.distance,
+  deliveryTime: r.deliveryTime,
+  tags: r.tags,
+  promos: r.isPromo ? [{ text: 'PROMO', color: 'primary' as const }] : r.isFreeShipping ? [{ text: 'FREE SHIPPING', color: 'tertiary' as const }] : [],
+}));
 
 const FILTERS = ['Distance', 'Rating 4.5+', 'Fast Delivery', 'Free Shipping', 'Promo'];
 

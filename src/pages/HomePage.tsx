@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import CategoryChip from '../components/shared/CategoryChip';
@@ -8,7 +9,32 @@ import { categories, flashSaleItems, popularRestaurants, trendingRestaurants } f
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [timeLeft] = useState('02:14:55');
+  const [timeLeft, setTimeLeft] = useState('02:14:55');
+  const [loadingPopular, setLoadingPopular] = useState(true);
+
+  const decrementTime = (timeStr: string): string => {
+    const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+    let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    if (totalSeconds > 0) {
+      totalSeconds -= 1;
+    }
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(prev => decrementTime(prev));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoadingPopular(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
@@ -55,7 +81,7 @@ export default function HomePage() {
                 <span>{timeLeft}</span>
               </div>
             </div>
-            <a className="text-[var(--color-primary)] font-bold text-sm hover:underline" href="#">View All</a>
+            <Link to="/nearby" className="text-[var(--color-primary)] font-bold text-sm hover:underline">View All</Link>
           </div>
           <div className="flex overflow-x-auto no-scrollbar gap-5 snap-x">
             {flashSaleItems.map(item => <FlashSaleCard key={item.id} item={item} />)}
@@ -72,7 +98,17 @@ export default function HomePage() {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {popularRestaurants.map(r => <RestaurantCard key={r.id} restaurant={r} />)}
+            {loadingPopular ?
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-[var(--color-surface-container-lowest)] rounded-xl p-4 animate-pulse">
+                  <div className="w-full h-48 bg-[var(--color-surface-container-high)] rounded-lg mb-4"></div>
+                  <div className="h-4 bg-[var(--color-surface-container-high)] rounded mb-2"></div>
+                  <div className="h-3 bg-[var(--color-surface-container-high)] rounded mb-1"></div>
+                  <div className="h-3 bg-[var(--color-surface-container-high)] rounded w-3/4"></div>
+                </div>
+              )) :
+              popularRestaurants.map(r => <RestaurantCard key={r.id} restaurant={r} />)
+            }
           </div>
         </section>
 
@@ -86,7 +122,7 @@ export default function HomePage() {
                 <span>Popular</span>
               </div>
             </div>
-            <a className="text-[var(--color-primary)] font-bold text-sm hover:underline" href="#">View All</a>
+            <Link to="/nearby" className="text-[var(--color-primary)] font-bold text-sm hover:underline">View All</Link>
           </div>
           <div className="flex overflow-x-auto no-scrollbar gap-6 snap-x">
             {trendingRestaurants.map(r => <RestaurantCard key={r.id} restaurant={r} variant="scroll" />)}
