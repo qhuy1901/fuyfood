@@ -1,0 +1,83 @@
+import { Link, useLocation } from 'react-router-dom';
+
+interface TopNavBarProps {
+  readonly simplified?: boolean;
+  readonly pageTitle?: string;
+}
+
+export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarProps) {
+  const location = useLocation();
+  const activeNav = (path: string) =>
+    location.pathname === path
+      ? 'text-orange-600 border-b-2 border-orange-600 pb-1'
+      : 'text-neutral-600 hover:text-neutral-900 transition-colors';
+
+  return (
+    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm glass-header">
+      <div className="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+        {/* Left */}
+        <div className="flex items-center gap-4">
+          {simplified && (
+            <button
+              className="p-2 hover:bg-neutral-50 rounded-full transition-all"
+              onClick={() => window.history.back()}
+            >
+              <span className="material-symbols-outlined text-neutral-900">arrow_back</span>
+            </button>
+          )}
+          <Link to="/" className="text-2xl font-black italic text-orange-600 font-headline tracking-tight">
+            FuyFood
+          </Link>
+          {!simplified && (
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[var(--color-surface-container-low)] rounded-full cursor-pointer">
+              <span className="material-symbols-outlined text-[var(--color-primary)] text-sm">location_on</span>
+              <span className="text-xs font-semibold truncate max-w-[150px]">San Francisco, 123 Market St...</span>
+              <span className="material-symbols-outlined text-xs">expand_more</span>
+            </div>
+          )}
+        </div>
+
+        {/* Center nav */}
+        {!simplified ? (
+          <nav className="hidden md:flex items-center gap-8 font-headline font-bold tracking-tight">
+            <Link className={activeNav('/')} to="/">Browse</Link>
+            <Link className={activeNav('/orders')} to="/orders">Orders</Link>
+            <a className="text-neutral-600 hover:text-neutral-900 transition-colors" href="#">Offers</a>
+            <a className="text-neutral-600 hover:text-neutral-900 transition-colors" href="#">Help</a>
+          </nav>
+        ) : (
+          <div className="hidden md:flex items-center gap-8">
+            <span className="font-headline font-bold text-neutral-900">{pageTitle}</span>
+          </div>
+        )}
+
+        {/* Right */}
+        <div className="flex items-center gap-3">
+          {!simplified && (
+            <button className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95">
+              <span className="material-symbols-outlined">notifications</span>
+            </button>
+          )}
+          <Link to="/checkout" className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
+            <span className="material-symbols-outlined">shopping_cart</span>
+            <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-primary)] rounded-full" />
+          </Link>
+          {simplified && (
+            <button className="p-2">
+              <span className="material-symbols-outlined text-neutral-600">help_outline</span>
+            </button>
+          )}
+          {!simplified && (
+            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary-fixed)]">
+              <img
+                alt="User profile"
+                className="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRjDkTopnBnRbIM1cATM9hTXk_UOVzj1W1MgL2WjpelbxD7TkaTNGE8xv6CzA_q869milMn3KZWGFb8nN1RIbcTIucfEUrrJQNmuInp3vjFuK8uxEfkECan__IgQoeI14LuXukYM4ecWfVanvVgLgVSG-g1EG8CnJ-y2egbgAa-NEBU1tQ2MhzgDZkhKtqs0E7lNtCML1ZxmNcZQ3CZUWZbAgi_Ok_mMqUanhULU-I5pEnpb2JUor5PdxCfye5OA0bmDiFqXTaC8C0"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
