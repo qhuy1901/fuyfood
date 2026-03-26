@@ -96,6 +96,19 @@ export const categories: Category[] = [
   { emoji: '🍔', label: 'Burgers' },
   { emoji: '🌮', label: 'Tacos' },
   { emoji: '🥩', label: 'Steak' },
+  { emoji: '🍗', label: 'Chicken' },
+  { emoji: '🍖', label: 'BBQ' },
+  { emoji: '🍤', label: 'Seafood' },
+  { emoji: '🥟', label: 'Dumplings' },
+  { emoji: '🍝', label: 'Pasta' },
+  { emoji: '🥪', label: 'Sandwiches' },
+  { emoji: '🍲', label: 'Hot Pot' },
+  { emoji: '🍛', label: 'Curry' },
+  { emoji: '🍱', label: 'Bento' },
+  { emoji: '🥓', label: 'Breakfast' },
+  { emoji: '🍿', label: 'Fast Food' },
+  { emoji: '🥤', label: 'Soft Drinks' },
+  { emoji: '☰', label: 'All' },
 ];
 
 // ---- Flash Sale ----
@@ -123,6 +136,48 @@ export const flashSaleItems: FlashSaleItem[] = [
     originalPrice: 22.00,
     discountPct: 30,
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAWsbU4i-9juwShzAs_HikOkZksXB8IiIcJThs7L8FKJylYdXf3PIRdq4zhHbvOcnUVG8aowItpU4S2EHskWnv0vMxvG-6rQBP4FYekyDZfCsk79VyRuEXTy-NO6tNmbZ35Cxm0Os3vQLrkW5vUY8ZCPqyUeXy9EOReE3SLETYmE4EBTxb69Se3HScuFdp4kpNUFwJiWH44R8Qot9SZGMc1LmX8mEF7lpNNNRwxyV187wTHjgX3aPfP0XCira3-UeRuIjQd8FATsYyN',
+  },
+
+  // New items
+  {
+    id: 'fs4',
+    name: 'Crispy Fried Chicken Combo',
+    price: 9.90,
+    originalPrice: 14.00,
+    discountPct: 29,
+    imageUrl: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92',
+  },
+  {
+    id: 'fs5',
+    name: 'Grilled Beef Banh Mi',
+    price: 6.50,
+    originalPrice: 9.50,
+    discountPct: 32,
+    imageUrl: 'https://static.vecteezy.com/system/resources/previews/054/675/509/large_2x/delicious-grilled-beef-banh-mi-sandwich-with-fresh-vegetables-photo.jpg',
+  },
+  {
+    id: 'fs6',
+    name: 'Cheesy Seafood Pasta',
+    price: 13.20,
+    originalPrice: 19.00,
+    discountPct: 31,
+    imageUrl: 'https://patijinich.com/wp-content/uploads/2019/08/812-cheese-and-shrimp-pasta-bake.jpg',
+  },
+  {
+    id: 'fs7',
+    name: 'Matcha Cream Dessert Box',
+    price: 7.80,
+    originalPrice: 11.00,
+    discountPct: 29,
+    imageUrl: 'https://images.unsplash.com/photo-1551024601-bec78aea704b',
+  },
+  {
+    id: 'fs8',
+    name: 'Spicy Korean Tteokbokki',
+    price: 8.40,
+    originalPrice: 12.00,
+    discountPct: 30,
+    imageUrl: 'https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_1:1/k%2FPhoto%2FRecipes%2F2024-09-tteokbokki%2Ftteokbokki-523',
   },
 ];
 

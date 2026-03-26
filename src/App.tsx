@@ -4,6 +4,7 @@ import RestaurantDetailPage from './pages/RestaurantDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
+import NearbyRestaurantsPage from './pages/NearbyRestaurantsPage';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order/:id/tracking" element={<OrderTrackingPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
+        <Route path="/nearby" element={<NearbyRestaurantsPage />} />
       </Routes>
     </BrowserRouter>
   );
