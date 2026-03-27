@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation } from '../hooks/useLocation';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { popularRestaurants } from '../data/mockData';
@@ -47,10 +48,23 @@ function SkeletonCard({ opacity }: { opacity: number }) {
 }
 
 // ---- Main Page ----
-export default function NearbyRestaurantsPage() {
+export default function RestaurantListPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { locationText, loadingLocation } = useLocation();
+  const categoryFilter = searchParams.get('category');
+
   const [activeFilter, setActiveFilter] = useState('Distance');
   const [favourites, setFavourites] = useState<Set<string>>(new Set());
+
+  // Filter restaurants based on category
+  const filteredRestaurants = categoryFilter
+    ? nearbyRestaurants.filter(restaurant =>
+        restaurant.tags.some(tag =>
+          tag.toLowerCase().includes(categoryFilter.toLowerCase())
+        )
+      )
+    : nearbyRestaurants;
 
   const toggleFav = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,7 +77,7 @@ export default function NearbyRestaurantsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
-      <TopNavBar simplified pageTitle="Nearby Restaurants" />
+      <TopNavBar simplified pageTitle="Restaurants" />
 
       <main className="pt-6 pb-28 max-w-screen-xl mx-auto px-4">
         {/* Location bar */}
@@ -72,7 +86,9 @@ export default function NearbyRestaurantsPage() {
             <span className="material-symbols-outlined text-[var(--color-primary)] fill-icon">location_on</span>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] font-bold text-[var(--color-primary)] tracking-widest uppercase">Delivering To</p>
-              <p className="text-sm font-semibold truncate">221B Baker St, London, NW1 6XE, UK</p>
+              <p className="text-sm font-semibold truncate">
+                {loadingLocation ? 'Getting location...' : locationText}
+              </p>
             </div>
             <span className="material-symbols-outlined text-[var(--color-on-surface-variant)]">chevron_right</span>
           </div>
@@ -100,7 +116,8 @@ export default function NearbyRestaurantsPage() {
         {/* Results count */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm font-medium text-[var(--color-on-surface-variant)]">
-            <span className="font-bold text-[var(--color-on-surface)]">{nearbyRestaurants.length}</span> restaurants nearby
+            <span className="font-bold text-[var(--color-on-surface)]">{filteredRestaurants.length}</span> restaurants found
+            {categoryFilter && <span> for "{categoryFilter}"</span>}
           </p>
           <button className="flex items-center gap-2 text-sm font-semibold text-[var(--color-on-surface)] hover:text-[var(--color-primary)] transition-colors">
             <span className="material-symbols-outlined text-sm">tune</span>
@@ -110,7 +127,7 @@ export default function NearbyRestaurantsPage() {
 
         {/* Restaurant grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {nearbyRestaurants.map(restaurant => (
+          {filteredRestaurants.map(restaurant => (
             <article
               key={restaurant.id}
               className="group cursor-pointer"

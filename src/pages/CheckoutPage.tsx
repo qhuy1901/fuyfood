@@ -4,6 +4,7 @@ import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { addresses, paymentMethods, cartItems } from '../data/mockData';
 import { useCheckout } from '../hooks/useCheckout';
+import { useLocation } from '../hooks/useLocation';
 
 // ── Sub-component: STORE + ORDERED ITEMS ──────────────────────────────────────
 const storeItems = [
@@ -150,6 +151,7 @@ function CustomersAlsoOrdered() {
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const { locationText, loadingLocation } = useLocation();
   const {
     selectedAddressId, setAddress,
     selectedPaymentId, setPayment,
@@ -198,6 +200,7 @@ export default function CheckoutPage() {
                 </div>
                 <button className="text-[var(--color-primary)] font-bold text-sm px-4 py-2 hover:bg-[var(--color-primary-fixed)] rounded-full transition-all">EDIT</button>
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {addresses.map(addr => (
                   <div
@@ -279,7 +282,7 @@ export default function CheckoutPage() {
             <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
               <div className="flex items-center gap-3 mb-4">
                 <span className="material-symbols-outlined text-[var(--color-primary)] text-2xl">notes</span>
-                <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-headline)' }}>Delivery Instructions</h2>
+                <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-headline)' }}>Note</h2>
               </div>
               <textarea
                 className="w-full bg-[var(--color-surface-container-low)] border-none rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-container)] min-h-[100px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-variant)]/50 resize-none"

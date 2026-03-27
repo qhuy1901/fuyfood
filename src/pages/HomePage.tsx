@@ -8,7 +8,6 @@ import RestaurantCard from '../components/shared/RestaurantCard';
 import { categories, flashSaleItems, popularRestaurants, trendingRestaurants } from '../data/mockData';
 
 export default function HomePage() {
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState('02:14:55');
   const [loadingPopular, setLoadingPopular] = useState(true);
 
@@ -63,8 +62,6 @@ export default function HomePage() {
                 <CategoryChip
                   key={cat.label}
                   category={cat}
-                  isActive={activeCategory === cat.label}
-                  onClick={() => setActiveCategory(prev => prev === cat.label ? null : cat.label)}
                 />
               ))}
             </div>
@@ -81,7 +78,7 @@ export default function HomePage() {
                 <span>{timeLeft}</span>
               </div>
             </div>
-            <Link to="/nearby" className="text-[var(--color-primary)] font-bold text-sm hover:underline">View All</Link>
+            <Link to="/restaurants" className="text-[var(--color-primary)] font-bold text-sm hover:underline">View All</Link>
           </div>
           <div className="flex overflow-x-auto no-scrollbar gap-5 snap-x">
             {flashSaleItems.map(item => <FlashSaleCard key={item.id} item={item} />)}
@@ -122,7 +119,7 @@ export default function HomePage() {
                 <span>Popular</span>
               </div>
             </div>
-            <Link to="/nearby" className="text-[var(--color-primary)] font-bold text-sm hover:underline">View All</Link>
+            <Link to="/restaurants" className="text-[var(--color-primary)] font-bold text-sm hover:underline">View All</Link>
           </div>
           <div className="flex overflow-x-auto no-scrollbar gap-6 snap-x">
             {trendingRestaurants.map(r => <RestaurantCard key={r.id} restaurant={r} variant="scroll" />)}
