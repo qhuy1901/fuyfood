@@ -1,0 +1,289 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import BottomNavBar from '../components/shared/BottomNavBar';
+
+// ---- Types ----
+interface CartItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  qty: number;
+  imageUrl: string;
+}
+
+// ---- Initial cart data (from Stitch design) ----
+const initialItems: CartItem[] = [
+  {
+    id: 'c1',
+    name: 'Margherita Classica',
+    description: 'Large • Extra Cheese • Thin Crust',
+    price: 18.50,
+    qty: 1,
+    imageUrl:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuB4tH6P_zVRwSIAYYpb8r4jpVOeTKbC-2fX9rn3oW45Wn1kVIfU_MbuJJbf6rBEiueRPX3MydyhKidl_WoIowjBQyBrebSJcp4TmRl9SzZ_XV3Zb_oYlZU-Pj2-avcjAtICm4132M1ySeEjnNEDW9sfkUT_MVedvd6hK9V8EeCtbW0qYjarHLCS061GjpbKd7zPgRyvLzr-vckq6LdCMwIJjM7nPS9rFiOBSBBFOcVRfzrSAwBJL9GjMI5_rYMoj3VnFcC98ssIy1sX',
+  },
+  {
+    id: 'c2',
+    name: 'Authentic Tiramisu',
+    description: 'Regular • Low Sugar',
+    price: 12.00,
+    qty: 2,
+    imageUrl:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCNjIdHlE5Gt-vDqde3gA2F_PCim0gZ3H4rShOzgUrR7xM1CgDBSY_CcGiFAoecGK05_8VLtALMhqhC4kUtDEexTZy0pGUH2NC4CuYQsoPu8NGwwOsAuTr74u9WOKSpqeuxyik88P1D2fkNZRAAMGM7GIHOvptbHMmwN13hO-OlZolA77YyfrPg_Ie7NQdGLMzrJ63w8JhavZB_Vpqlz_f6fenrQmsY1VbCxttNyJ_T36FrndqyzxqxL2v49cVtkZXJ2Vl7OnQvigfq',
+  },
+];
+
+export default function CartPage() {
+  const navigate = useNavigate();
+  const [items, setItems] = useState<CartItem[]>(initialItems);
+  const [note, setNote] = useState('');
+
+  const updateQty = (id: string, delta: number) => {
+    setItems(prev =>
+      prev
+        .map(item => item.id === id ? { ...item, qty: item.qty + delta } : item)
+        .filter(item => item.qty > 0)
+    );
+  };
+
+  const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
+  const clearAll = () => setItems([]);
+
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const deliveryFee = 2.00;
+  const serviceFee = 1.50;
+  const total = subtotal + deliveryFee + serviceFee;
+  const itemCount = items.reduce((s, i) => s + i.qty, 0);
+
+  const isEmpty = items.length === 0;
+
+  return (
+    <div className="min-h-screen bg-[var(--color-surface)]">
+      {/* Custom simplified header matching Stitch design */}
+      <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <div className="flex items-center justify-between px-6 py-4 w-full max-w-screen-xl mx-auto">
+          <div className="flex items-center gap-4">
+            <button
+              className="p-2 hover:bg-neutral-50 rounded-full transition-all"
+              onClick={() => navigate(-1)}
+            >
+              <span className="material-symbols-outlined text-neutral-900">arrow_back</span>
+            </button>
+            <div
+              className="text-2xl font-black italic text-[var(--color-primary)] tracking-tight cursor-pointer"
+              style={{ fontFamily: 'var(--font-headline)' }}
+              onClick={() => navigate('/')}
+            >
+              FuyFood
+            </div>
+          </div>
+          <h1 className="font-bold text-lg tracking-tight" style={{ fontFamily: 'var(--font-headline)' }}>
+            Your Cart
+          </h1>
+          <button
+            className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-error)] transition-colors p-2"
+            onClick={clearAll}
+            title="Clear cart"
+          >
+            <span className="material-symbols-outlined">delete_sweep</span>
+          </button>
+        </div>
+      </header>
+
+      <main className="pt-24 pb-40 px-4 max-w-screen-xl mx-auto">
+        {/* Empty state */}
+        {isEmpty && (
+          <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">
+            <span className="material-symbols-outlined text-8xl text-[var(--color-surface-container-highest)]">
+              shopping_bag
+            </span>
+            <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-headline)' }}>Your cart is empty</h2>
+            <p className="text-[var(--color-on-surface-variant)]">Add some delicious items!</p>
+            <button
+              onClick={() => navigate('/')}
+              className="px-8 py-3 rounded-full text-white font-bold transition-all hover:scale-105 active:scale-95"
+              style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container)', fontFamily: 'var(--font-headline)' }}
+            >
+              Browse Restaurants
+            </button>
+          </div>
+        )}
+
+        {!isEmpty && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Column */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Restaurant + Items */}
+              <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
+                {/* Store header */}
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 rounded-full bg-[var(--color-surface-container-highest)] flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img
+                      alt="Store logo"
+                      className="w-full h-full object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3dGccMCs91T1eF7kYoaeyBvGmNxxZctmRt5ecxXoxBIeP3kiYVRCwB0341DAcAv3Dod5PbytaXSSi13WDB-hHAt3--5IfmCMm2TS25as0mGgOQi0p-x1Tyyef58iRYrSnlGL0BpcZud39izbO5b37CcgD0_Ocps7-LZ3PTIZicyzrvTTDe50bS-sjMRLcUr_BFWBbDP5UaDI0JJtYmIeRXZalj_stQlXOQOhZa09sQoWFxRjaXJwtpMWB5QfCP83EZBjZHManHctQ"
+                    />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>La Trattoria del Gusto</h2>
+                    <p className="text-[var(--color-on-surface-variant)] text-sm">Italian Gourmet • 2.4 km</p>
+                  </div>
+                </div>
+
+                {/* Item list */}
+                <div className="space-y-2">
+                  {items.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      className={`flex gap-4 py-4 ${idx < items.length - 1 ? 'border-b border-[var(--color-surface-container-low)]' : ''}`}
+                    >
+                      <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
+                        <img alt={item.name} src={item.imageUrl} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-grow flex flex-col justify-between">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-bold text-lg" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h3>
+                            <p className="text-sm text-[var(--color-on-surface-variant)] mt-1">{item.description}</p>
+                          </div>
+                          <span className="font-bold text-lg ml-4 flex-shrink-0" style={{ fontFamily: 'var(--font-headline)' }}>
+                            ${(item.price * item.qty).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mt-4">
+                          {/* Qty stepper */}
+                          <div className="flex items-center bg-[var(--color-surface-container-low)] rounded-full p-1 gap-4">
+                            <button
+                              onClick={() => updateQty(item.id, -1)}
+                              className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--color-surface-container-lowest)] hover:bg-[var(--color-primary)] hover:text-white transition-colors shadow-sm"
+                            >
+                              <span className="material-symbols-outlined text-sm">remove</span>
+                            </button>
+                            <span className="font-bold text-sm min-w-[20px] text-center">{item.qty}</span>
+                            <button
+                              onClick={() => updateQty(item.id, 1)}
+                              className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--color-surface-container-lowest)] hover:bg-[var(--color-primary)] hover:text-white transition-colors shadow-sm"
+                            >
+                              <span className="material-symbols-outlined text-sm">add</span>
+                            </button>
+                          </div>
+                          {/* Delete */}
+                          <button
+                            onClick={() => removeItem(item.id)}
+                            className="text-[var(--color-on-surface-variant)]/40 hover:text-[var(--color-error)] transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-lg">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Notes */}
+              <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="material-symbols-outlined text-[var(--color-primary)] text-2xl">notes</span>
+                  <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-headline)' }}>
+                    Add note for restaurant or driver
+                  </h2>
+                </div>
+                <textarea
+                  className="w-full bg-[var(--color-surface-container-low)] border-none rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-container)] min-h-[100px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-variant)]/50 text-sm resize-none"
+                  placeholder="E.g. Please leave at the front door or no onions please..."
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                />
+              </section>
+            </div>
+
+            {/* Right Column */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Sticky order summary */}
+              <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)] lg:sticky lg:top-24">
+                <h2 className="font-bold text-lg mb-6" style={{ fontFamily: 'var(--font-headline)' }}>Order Summary</h2>
+                <div className="space-y-4 mb-8">
+                  <div className="flex justify-between items-center text-[var(--color-on-surface-variant)] text-sm">
+                    <span>Subtotal ({itemCount} items)</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[var(--color-on-surface-variant)] text-sm">
+                    <span>Delivery fee</span>
+                    <span>${deliveryFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[var(--color-on-surface-variant)] text-sm">
+                    <span>Service fee</span>
+                    <span>${serviceFee.toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className="pt-6 border-t border-[var(--color-surface-container)]">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="font-extrabold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>Total Amount</span>
+                    <span className="font-extrabold text-2xl text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-headline)' }}>
+                      ${total.toFixed(2)}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => navigate('/checkout')}
+                    className="w-full py-5 text-white font-black text-lg rounded-2xl shadow-[0_8px_20px_rgba(178,34,4,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container))',
+                      fontFamily: 'var(--font-headline)',
+                    }}
+                  >
+                    PROCEED TO CHECKOUT
+                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                  </button>
+                  <p className="text-[10px] text-center text-[var(--color-on-surface-variant)] mt-4 px-4 leading-tight uppercase tracking-widest font-bold">
+                    Prices include tax and fees where applicable
+                  </p>
+                </div>
+              </section>
+
+              {/* Delivery info badge */}
+              <div className="p-4 bg-[var(--color-tertiary-fixed)] rounded-2xl flex items-center gap-4 shadow-sm">
+                <span className="material-symbols-outlined text-[var(--color-tertiary)] fill-icon">schedule</span>
+                <div>
+                  <p className="text-xs font-bold text-[var(--color-tertiary)] uppercase tracking-wider">Estimated Delivery</p>
+                  <p className="font-extrabold text-[var(--color-on-tertiary-fixed)]" style={{ fontFamily: 'var(--font-headline)' }}>
+                    25 - 35 mins
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Mobile bottom checkout bar */}
+      {!isEmpty && (
+        <div className="lg:hidden fixed bottom-0 left-0 w-full p-6 bg-white rounded-t-[2rem] shadow-[0_-12px_32px_rgba(27,28,28,0.1)] z-50">
+          <div className="flex items-center justify-between mb-4 px-2">
+            <div className="flex flex-col">
+              <span className="text-xs text-[var(--color-on-surface-variant)] font-bold uppercase tracking-wider">Total</span>
+              <span className="font-black text-2xl text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-headline)' }}>
+                ${total.toFixed(2)}
+              </span>
+            </div>
+            <span className="text-xs text-[var(--color-on-surface-variant)]">{itemCount} Items</span>
+          </div>
+          <button
+            onClick={() => navigate('/checkout')}
+            className="w-full text-white py-5 rounded-full font-black text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-3"
+            style={{
+              background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container))',
+              fontFamily: 'var(--font-headline)',
+            }}
+          >
+            PROCEED TO CHECKOUT
+            <span className="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
+      )}
+
+      <BottomNavBar />
+    </div>
+  );
+}

@@ -62,7 +62,7 @@ export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarPr
               <span className="material-symbols-outlined">notifications</span>
             </button>
           )}
-          <Link to="/checkout" className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
+          <Link to="/cart" className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
             <span className="material-symbols-outlined">shopping_cart</span>
             <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-primary)] rounded-full" />
           </Link>

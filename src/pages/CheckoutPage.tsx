@@ -4,7 +4,6 @@ import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { addresses, paymentMethods, cartItems } from '../data/mockData';
 import { useCheckout } from '../hooks/useCheckout';
-import { useLocation } from '../hooks/useLocation';
 
 // ── Sub-component: STORE + ORDERED ITEMS ──────────────────────────────────────
 const storeItems = [
@@ -151,7 +150,6 @@ function CustomersAlsoOrdered() {
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { locationText, loadingLocation } = useLocation();
   const {
     selectedAddressId, setAddress,
     selectedPaymentId, setPayment,

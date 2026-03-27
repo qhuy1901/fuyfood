@@ -5,6 +5,8 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import RestaurantListPage from './pages/RestaurantListPage';
+import CartPage from './pages/CartPage';
+import NearbyRestaurantsPage from './pages/NearbyRestaurantsPage';
 
 export default function App() {
   return (
@@ -15,7 +17,10 @@ export default function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order/:id/tracking" element={<OrderTrackingPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
+        <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
         <Route path="/restaurants" element={<RestaurantListPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/nearby" element={<NearbyRestaurantsPage />} />
       </Routes>
     </BrowserRouter>
   );
