@@ -1,8 +1,152 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { addresses, paymentMethods, cartItems } from '../data/mockData';
 import { useCheckout } from '../hooks/useCheckout';
+
+// ── Sub-component: STORE + ORDERED ITEMS ──────────────────────────────────────
+const storeItems = [
+  {
+    id: 'si1',
+    name: 'Truffle Tagliatelle',
+    note: 'Size: Large, Extra Creamy',
+    qty: 1,
+    price: 18.50,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA5E-2opfKXrh5dSREoQmndP-stbUXffcUG9JlIAtRNcf5e6g_pDx5fqgzAQY4H97gk-XYR-6UtoJI-AnVoMHUBJf4l_upL_oLeQnDm98VRFt2d7-KT1O6srntLPXoKMG4bP40ITYaVIH1Dz4Sjf9TzkHJyQKTEsfEL9r5PM2ColWkIqGAD_XWfFrwJy0t87h1DUX8-cuLt-xS53RAgvQJgV4H8Lyt1DmuXmzrH50RNKJr6Yc9N4nz6FVUsfPa3lQ5go-LLU9xfTC4h',
+  },
+  {
+    id: 'si2',
+    name: 'Burrata Caprese',
+    note: 'Size: Standard',
+    qty: 1,
+    price: 12.00,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBO0Tw7XC88V5ecjn11oVditKNfdpAEAv3bb2AIRP6BOsAnwgfjzEhvUfL7eBb4YQ5hH6MfXeY77nyP2BGBit50cc-6yYj0U0oH5ptHNcecS1bMrxq98YdnFyKuLPoLpebPwhl9CUUl4fbL2DML4Z6TUklGt6Rz8bwahKwKBTwWzHu85EkalCcq6DLXptdKFG_-0xX_n_tF6jMP0yYh2A6V_s_cxk9HzRKyvCaQCVDJuIPXJSUPmTdMmEsyypWtjmuuX2n9JWEe35Ec',
+  },
+  {
+    id: 'si3',
+    name: 'Iced Lemonade',
+    note: 'No Ice',
+    qty: 1,
+    price: 2.00,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAyFtLRsD1u26N_H7NwI5_pGMhQAGYxTNJ1Pfv5BY_my76F1NrVtra9cmSJFD8d4PekYfPgHSrBoGBuPkBWrpFvnLR0RQv32nH8igLNTftgKkW_PX7XkPIRdUEdnZJ-L4laY0Y170op2w5PNkoICoaSMMxfb9HZdYwJAY-SzujaCKzsuCrAJI92k_NEKIb02WhLeTqLEOCZmBbi-T9nMPcOiyBD5Eyr2MMBKIrskFma-3tGLYvQ8gwYiHpgxGnhRYyphm9uhLpt2Lnl',
+  },
+];
+
+function StoreOrderedItems() {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-[var(--color-surface-container-highest)] flex items-center justify-center overflow-hidden">
+            <img
+              alt="Store logo"
+              className="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3dGccMCs91T1eF7kYoaeyBvGmNxxZctmRt5ecxXoxBIeP3kiYVRCwB0341DAcAv3Dod5PbytaXSSi13WDB-hHAt3--5IfmCMm2TS25as0mGgOQi0p-x1Tyyef58iRYrSnlGL0BpcZud39izbO5b37CcgD0_Ocps7-LZ3PTIZicyzrvTTDe50bS-sjMRLcUr_BFWBbDP5UaDI0JJtYmIeRXZalj_stQlXOQOhZa09sQoWFxRjaXJwtpMWB5QfCP83EZBjZHManHctQ"
+            />
+          </div>
+          <div>
+            <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>La Trattoria del Gusto</h2>
+            <p className="text-[var(--color-on-surface-variant)] text-sm">Italian Gourmet</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setCollapsed(c => !c)}
+          className="flex items-center gap-1 text-[var(--color-on-surface-variant)] text-xs font-bold uppercase tracking-wider hover:text-[var(--color-primary)] transition-colors"
+        >
+          {collapsed ? 'EXPAND' : 'COLLAPSE'}
+          <span className="material-symbols-outlined text-lg">{collapsed ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
+        </button>
+      </div>
+
+      {!collapsed && (
+        <div className="space-y-1">
+          {storeItems.map((item, idx) => (
+            <div
+              key={item.id}
+              className={`flex items-center gap-4 py-3 ${idx < storeItems.length - 1 ? 'border-b border-[var(--color-surface-container-low)]' : ''}`}
+            >
+              <img alt={item.name} src={item.imageUrl} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h3>
+                <p className="text-[var(--color-on-surface-variant)] text-xs mt-0.5">{item.note}</p>
+                <p className="text-[var(--color-on-surface-variant)] text-xs mt-1">{item.qty}x</p>
+              </div>
+              <span className="font-bold flex-shrink-0" style={{ fontFamily: 'var(--font-headline)' }}>${item.price.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ── Sub-component: CUSTOMERS ALSO ORDERED ─────────────────────────────────────
+const upsellItems = [
+  {
+    id: 'u1',
+    name: 'Classic Tiramisu',
+    price: 8.50,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC9hQmvErCpGx1DJpBi4w6kMrm7ocxO-P_OJYW-yYAjWIZS1RkXMgDz_e93SdGAVqj5djwcq1I0qL0b98Slliq4tzmg58H0J2JkF6Pp3q_gO96YjxI12ghPw6xLcVEUS5PHlRmywloo0-iC2nqeYpJpSAuCgjObV-2E2P5IA_YYdsnk8kw2UppSJrrnnC03df2jzIbbtLwps2QuDhj8XlqxnpApSEcRb_6xh4y_2QZ-Al5Uiy1PEPu7DiQ6qAEXNqO8kFqysyojaVE-',
+  },
+  {
+    id: 'u2',
+    name: 'Cheesy Garlic Bread',
+    price: 6.00,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAkSVcaHUc4MamlVoHf0NSjH3FCobzL6y_46U_96vkLSnH3m_R1J54fb4kP2AexBYwiP33nXXPy6FTzT3xmjK7XMVOuBGrCv9Xaw0QrD20h7PD_Xa6USpP4YX_G7i-PQdnQL2kkt8jztt5gfU_MeHjTQ6uNiKKKYtzT9iX3trrgUfHWAxS6r6QcMmMmFwAZGaYbzeAiG-BK8rboYqTayRuN8Kuro0GNgPfGq4nWp6_PSAt7yXH7ZGYZMas-groCTcpVhFcyn-QXcqDt',
+  },
+  {
+    id: 'u3',
+    name: 'Berry Panna Cotta',
+    price: 7.50,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFYRsiuNB4Ws_kG0t9HGOyYSQxVJ_50yqXZUO0PYagO2AD8GFkJx1m1pBg2WBQ0obUScTtfbiKhdt77CCfA6ped5RBM_lcT6NqHJ7yYtcHXmIJxZYuQeIcA3RFa-hNe0x75MOodXOGkviQa0nfTRfM4KZUPNckNs7g_o1J4FRnb1d8pLZ2StsFSKkqUlJjB5a2uhU1vHbpkKySBsZdbfSQL1c0afH5CJFZlYsyHEtCuck3P7ItPUFG93cd0kGZWlSZcamH8uy_xt-2',
+  },
+  {
+    id: 'u4',
+    name: 'Roasted Veggies',
+    price: 5.50,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBvfDwQuIQOoJL_g8ZVYjn_NqO2VnSz4K2HXn9fN0AFHpCtg_Y9A_M2OEyROb7yI3gXE6CA2-SlFO1YQCfRBvETkQz2N-cK_VleW_A_RnvRoPJZSbyc7pKRjFq_63v98aiZEAjpxQs2gUPyir7kjhYXodLnQuNNNLUfhWKleOvJGTkDR2XMomnlh2ZEJ9ziZqRipfvYUsrqjHTpPaoymdUMwemc_L_XvQa8mQDpCXRarZIk5F7Y39OkjDQk6fyufQ45JrgRGKnBAsek',
+  },
+];
+
+function CustomersAlsoOrdered() {
+  const [added, setAdded] = useState<Set<string>>(new Set());
+
+  return (
+    <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)] overflow-hidden">
+      <h2 className="font-bold text-lg mb-6" style={{ fontFamily: 'var(--font-headline)' }}>Customers also ordered</h2>
+      <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+        {upsellItems.map(item => (
+          <div key={item.id} className="flex-none w-40 bg-[var(--color-surface-container-low)] rounded-xl overflow-hidden group">
+            <div className="relative h-28">
+              <img
+                alt={item.name}
+                src={item.imageUrl}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+              <button
+                onClick={() => setAdded(prev => new Set([...prev, item.id]))}
+                className={`absolute bottom-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all ${
+                  added.has(item.id)
+                    ? 'bg-green-500 text-white scale-95'
+                    : 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-container)]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[18px]">{added.has(item.id) ? 'check' : 'add'}</span>
+              </button>
+            </div>
+            <div className="p-3">
+              <h4 className="font-bold text-sm truncate" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h4>
+              <p className="text-[var(--color-primary)] font-bold text-sm mt-1">${item.price.toFixed(2)}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -84,6 +228,12 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </section>
+
+            {/* ── NEW: STORE + ORDERED ITEMS ── */}
+            <StoreOrderedItems />
+
+            {/* ── NEW: Customers also ordered ── */}
+            <CustomersAlsoOrdered />
 
             {/* Payment Methods */}
             <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
@@ -217,6 +367,28 @@ export default function CheckoutPage() {
                 </p>
               </div>
             </section>
+          </div>
+        </div>
+
+        {/* ── NEW: Featured merchant bento ── */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 relative h-48 rounded-2xl overflow-hidden group">
+            <img
+              alt="La Trattoria del Gusto"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5WxCER35kLHBrFxYFGT1xTixURE7jX29K8FTqUSOZ2Lhrlek8SGltwAX2zOUUKoQ535qjmNyKq_XM4PWmE0HL27TEOPdFtXQWxfE9SO0sHZsBVnOhqAsOWu9tfR02cviYIEx2H0GBg0h_hJQ6Tpr1Qwmo_iBY_N1FiO-jEROfQ9WoQoKNFDe5jOBNaKNLsnk38RL4KRoSPqmSC0rXaYzgwdvc21c8r_XlBXE_18papmJC_satnEPqH0p7R6Ai_OcnZ6waCHmwHunk"
+            />
+            <div className="absolute inset-0 flex items-end p-6" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }}>
+              <div>
+                <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">Ordering from</p>
+                <h3 className="text-white font-bold text-2xl" style={{ fontFamily: 'var(--font-headline)' }}>La Trattoria del Gusto</h3>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[var(--color-tertiary-fixed-dim)] rounded-2xl p-6 flex flex-col justify-center">
+            <span className="material-symbols-outlined text-[var(--color-on-tertiary-fixed)] text-4xl mb-4 fill-icon">eco</span>
+            <h4 className="font-bold text-[var(--color-on-tertiary-fixed)] text-xl leading-tight" style={{ fontFamily: 'var(--font-headline)' }}>Zero-Waste Delivery</h4>
+            <p className="text-[var(--color-on-tertiary-fixed-variant)] text-sm mt-2">Packaged in 100% biodegradable materials. Good for you, better for the planet.</p>
           </div>
         </div>
       </main>
