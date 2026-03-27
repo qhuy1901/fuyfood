@@ -2,8 +2,8 @@ import { Link, useLocation } from 'react-router-dom';
 
 const tabs = [
   { label: 'Explore', icon: 'explore', path: '/' },
-  { label: 'Search', icon: 'search', path: '/search' },
   { label: 'Cart', icon: 'shopping_bag', path: '/checkout' },
+  { label: 'Orders', icon: 'receipt_long', path: '/orders' },
   { label: 'Profile', icon: 'person', path: '/profile' },
 ];
 

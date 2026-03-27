@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useLocation as useUserLocation } from '../../hooks/useLocation';
 
 interface TopNavBarProps {
   readonly simplified?: boolean;
@@ -6,6 +7,7 @@ interface TopNavBarProps {
 }
 
 export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarProps) {
+  const { locationText, loadingLocation } = useUserLocation();
   const location = useLocation();
   const activeNav = (path: string) =>
     location.pathname === path
@@ -29,9 +31,11 @@ export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarPr
             FuyFood
           </Link>
           {!simplified && (
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[var(--color-surface-container-low)] rounded-full cursor-pointer">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[var(--color-surface-container-low)] rounded-full cursor-pointer min-w-[160px] max-w-[60vw] md:max-w-[280px] overflow-hidden">
               <span className="material-symbols-outlined text-[var(--color-primary)] text-sm">location_on</span>
-              <span className="text-xs font-semibold truncate max-w-[150px]">San Francisco, 123 Market St...</span>
+              <span className="text-xs font-semibold truncate max-w-[180px] md:max-w-[220px]">
+                {loadingLocation ? 'Getting location...' : locationText}
+              </span>
               <span className="material-symbols-outlined text-xs">expand_more</span>
             </div>
           )}
@@ -40,7 +44,7 @@ export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarPr
         {/* Center nav */}
         {!simplified ? (
           <nav className="hidden md:flex items-center gap-8 font-headline font-bold tracking-tight">
-            <Link className={activeNav('/')} to="/">Browse</Link>
+            <Link className={activeNav('/')} to="/">Explore</Link>
             <Link className={activeNav('/orders')} to="/orders">Orders</Link>
             <a className="text-neutral-600 hover:text-neutral-900 transition-colors" href="#">Offers</a>
             <a className="text-neutral-600 hover:text-neutral-900 transition-colors" href="#">Help</a>

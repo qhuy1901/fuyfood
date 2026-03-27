@@ -191,7 +191,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '25-35 min',
     distance: '1.2 km',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAr-r3M20-tfxjiEwflbAnGTZnQXBK_zGGe7YtmUMwKce5H1dZtzgD-FMn9scv27o2JJDl1xAzTt9CKZwyO82NjUjl5gqQ_27nLPwxk8ZoiiZ65QjsGnTRgGbcLnwUEXnldyvvONKQO9J8N6tfQ-mvA9MePnW2foKlTL_D7YaryXrKeyvvvwF8TGH17YTnCkQyci5MzCpP1aKr-FahMeY1N99vM18FPRKG_8fzT-bOw05QCB0TKsgE9FXseCLzLKlUpZ6GDWOSMBSIe',
-    tags: ['Free Shipping', 'Promo'],
+    tags: ['Rice', 'Noodles', 'Healthy', 'Free Shipping', 'Promo'],
     isFreeShipping: true,
     isPromo: true,
   },
@@ -203,7 +203,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '15-20 min',
     distance: '0.5 km',
     imageUrl: 'https://popmenucloud.com/cdn-cgi/image/width=1200,height=630,format=auto,fit=cover/ofkwqcbn/d12413fb-2fa6-4c68-aa71-48b0ebcbd87e.jpg',
-    tags: ['Free Shipping'],
+    tags: ['Sushi', 'Seafood', 'Free Shipping'],
     isFreeShipping: true,
   },
   {
@@ -214,7 +214,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '30-45 min',
     distance: '2.8 km',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAg476bxJM7whfNwQ2zvOCfvoV3M1VkKsdGZm-aDpDnPre2nNm58ocNhxZ2f_ApeWMhpcdtv9sMcUNou_juX62F0a47oSMeQNVt_uBn0GveKsuuuceM7CulsXnt8Sjem3lJt__CJOvMMI1oTskkRJIf0FXx7HQ2r6dTt3WpXOCwF1Ui3hxpe960p0pNM0S1A2vuI3RgDlO5gY93H-EX4i1Or3rTBrmie6bHex5MKEUS3qUtP0pmR8MnExvlQqSiS5D_YOOjI5IW_xuE',
-    tags: ['Top Rated'],
+    tags: ['Burgers', 'Fast Food', 'Top Rated'],
     isTopRated: true,
   },
   {
@@ -225,7 +225,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '20-30 min',
     distance: '1.5 km',
     imageUrl: 'https://images.squarespace-cdn.com/content/v1/68c8aaa474355d1850c80d81/2a584f48-236f-4b9c-881a-8542057bacdf/pizza-palace+%288%29.jpg',
-    tags: ['Promo'],
+    tags: ['Pizza', 'Pasta', 'Promo'],
     isPromo: true,
   },
   {
@@ -236,7 +236,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '15-25 min',
     distance: '0.8 km',
     imageUrl: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828',
-    tags: ['Free Shipping'],
+    tags: ['Tacos', 'Free Shipping'],
     isFreeShipping: true,
   },
   {
@@ -247,7 +247,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '18-28 min',
     distance: '1.0 km',
     imageUrl: 'https://images.unsplash.com/photo-1559314809-0d155014e29e',
-    tags: ['Top Rated'],
+    tags: ['Noodles', 'Top Rated'],
     isTopRated: true,
   },
   {
@@ -258,7 +258,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '12-22 min',
     distance: '0.6 km',
     imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd',
-    tags: ['Free Shipping', 'Promo'],
+    tags: ['Healthy', 'Free Shipping', 'Promo'],
     isFreeShipping: true,
     isPromo: true,
   },
@@ -270,7 +270,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '25-40 min',
     distance: '2.2 km',
     imageUrl: 'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=600,height=400,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f82cfa74-4e59-4c32-87ab-6533c7a27359.jpg',
-    tags: ['Top Rated'],
+    tags: ['BBQ', 'Top Rated'],
     isTopRated: true,
   },
   {
@@ -281,7 +281,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '10-20 min',
     distance: '0.4 km',
     imageUrl: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c',
-    tags: ['Free Shipping'],
+    tags: ['Sushi', 'Free Shipping'],
     isFreeShipping: true,
   },
   {
@@ -292,7 +292,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '15-25 min',
     distance: '1.3 km',
     imageUrl: 'https://images.unsplash.com/photo-1551024506-0bccd828d307',
-    tags: ['Promo'],
+    tags: ['Dessert', 'Promo'],
     isPromo: true,
   },
   {
@@ -303,7 +303,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '20-35 min',
     distance: '1.8 km',
     imageUrl: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92',
-    tags: [],
+    tags: ['Chicken'],
   },
   {
     id: 'r12',
@@ -313,7 +313,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '22-32 min',
     distance: '1.7 km',
     imageUrl: 'https://fnb.qdc.vn/pictures/catalog/pasta-paradise/thiet-ke-nha-hang-pasta-paradise-04.jpg',
-    tags: ['Top Rated'],
+    tags: ['Pasta', 'Top Rated'],
     isTopRated: true,
   },
   {
@@ -324,7 +324,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '18-28 min',
     distance: '0.9 km',
     imageUrl: 'https://images.unsplash.com/photo-1559847844-5315695dadae',
-    tags: ['Free Shipping'],
+    tags: ['Seafood', 'Free Shipping'],
     isFreeShipping: true,
   },
   {
@@ -335,7 +335,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '14-24 min',
     distance: '1.1 km',
     imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999',
-    tags: ['Promo'],
+    tags: ['Healthy', 'Promo'],
     isPromo: true,
   },
   {
@@ -346,7 +346,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '30-45 min',
     distance: '3.0 km',
     imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d',
-    tags: ['Top Rated'],
+    tags: ['Steak', 'Top Rated'],
     isTopRated: true,
   },
   {
