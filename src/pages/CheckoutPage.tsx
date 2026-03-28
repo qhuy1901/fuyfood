@@ -139,6 +139,7 @@ export default function CheckoutPage() {
   } = useCheckout();
 
   const { state } = useCart();
+
   const subtotal = state.totalPrice;
   const serviceFee = 1.20;
   const discount = voucherApplied ? 5.00 : 0;

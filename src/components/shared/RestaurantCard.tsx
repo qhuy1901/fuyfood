@@ -1,5 +1,6 @@
 import type { Restaurant } from '../../data/mockData';
 import { useNavigate } from 'react-router-dom';
+import ImageWithFallback from './ImageWithFallback';
 
 interface RestaurantCardProps {
   readonly restaurant: Restaurant;
@@ -16,7 +17,7 @@ export default function RestaurantCard({ restaurant, variant = 'grid' }: Restaur
       onClick={() => navigate(`/restaurant/${restaurant.id}`)}
     >
       <div className="aspect-video rounded-2xl overflow-hidden relative mb-4">
-        <img
+        <ImageWithFallback
           alt={restaurant.name}
           src={restaurant.imageUrl}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"

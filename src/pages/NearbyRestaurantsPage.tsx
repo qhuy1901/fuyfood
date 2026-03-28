@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
+import ImageWithFallback from '../components/shared/ImageWithFallback';
 
 // ---- Data (extracted from Stitch HTML) ----
 interface NearbyRestaurant {
@@ -147,7 +148,7 @@ export default function NearbyRestaurantsPage() {
             >
               {/* Image */}
               <div className="relative aspect-video overflow-hidden rounded-2xl mb-3 shadow-sm group-hover:shadow-md transition-shadow">
-                <img
+                <ImageWithFallback
                   alt={restaurant.name}
                   src={restaurant.imageUrl}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

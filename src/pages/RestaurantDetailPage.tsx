@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
+import ImageWithFallback from '../components/shared/ImageWithFallback';
 import { useCart } from '../context/CartContext';
 import { urbanUmamiMenu, type MenuItem } from '../data/mockData';
 
@@ -37,7 +38,7 @@ export default function RestaurantDetailPage() {
       <main className="max-w-screen-2xl mx-auto pb-32">
         {/* Hero Banner */}
         <section className="relative h-[300px] md:h-[400px] w-full overflow-hidden mb-8 md:rounded-b-xl">
-          <img
+          <ImageWithFallback
             alt="Urban Umami restaurant"
             className="w-full h-full object-cover"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXSoMb24Pdb5a9fg5Zxo0DXH0sGPxWNLSoR-6NIc7RZ5y53GeC3uqrtNOevZNG4RuiDkrbcpmByPyfoYpT1XcSi336dL6mLV-45FxIWbf2qG6OzxBPcR1WFWyA_X1qtEWkQIVnn8gcSnwHwTcEWtnPnn_Pcfe5EiyuFK61D5HK7m2WsNeIfb3xK6aWks-UM76ieKNHz03YZWPETrNJ__0pXZA9U_owofCgT85HaVKYMACn88TbQpqELUlOy_lcHV-vspMqWYIFMbQI"

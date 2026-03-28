@@ -5,9 +5,15 @@ import { useCart } from '../../context/CartContext';
 interface TopNavBarProps {
   readonly simplified?: boolean;
   readonly pageTitle?: string;
+  readonly hideCartLink?: boolean;
+  readonly actionButton?: {
+    label: string;
+    icon?: string;
+    onClick: () => void;
+  };
 }
 
-export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarProps) {
+export default function TopNavBar({ simplified = false, pageTitle, hideCartLink = false, actionButton }: TopNavBarProps) {
   const { locationText, loadingLocation } = useUserLocation();
   const { state } = useCart();
   const cartCount = state.totalItems;
@@ -65,20 +71,27 @@ export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarPr
               <span className="material-symbols-outlined">notifications</span>
             </button>
           )}
-          <Link to="/cart" className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
-            <span className="material-symbols-outlined">shopping_cart</span>
-            {cartCount > 0 && (
-              <span className="absolute top-0 right-0 min-w-[18px] h-5 rounded-full bg-[var(--color-primary)] text-[10px] font-black text-white flex items-center justify-center border-2 border-white">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-          {simplified && (
-            <button className="p-2">
-              <span className="material-symbols-outlined text-neutral-600">help_outline</span>
+          {!hideCartLink && (
+            <Link to="/cart" className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
+              <span className="material-symbols-outlined">shopping_cart</span>
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 min-w-[18px] h-5 rounded-full bg-[var(--color-primary)] text-[10px] font-black text-white flex items-center justify-center border-2 border-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
+          {actionButton && (
+            <button
+              type="button"
+              onClick={actionButton.onClick}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[var(--color-primary)] border border-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all"
+            >
+              {actionButton.icon && <span className="material-symbols-outlined text-base">{actionButton.icon}</span>}
+              <span className="text-xs font-bold">{actionButton.label}</span>
             </button>
           )}
-          {!simplified && (
+          {simplified && (
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary-fixed)]">
               <img
                 alt="User profile"

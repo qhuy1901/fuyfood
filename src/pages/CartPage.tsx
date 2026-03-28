@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { useCart } from '../context/CartContext';
 
@@ -16,7 +17,6 @@ export default function CartPage() {
   };
 
   const removeItemById = (cartItemId: string) => removeItem(cartItemId);
-  const clearAll = () => clearCart();
 
   const subtotal = items.reduce((s, i) => s + i.basePrice * i.quantity, 0);
   const deliveryFee = 2.0;
@@ -28,36 +28,12 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
-      {/* Custom simplified header matching Stitch design */}
-      <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="flex items-center justify-between px-6 py-4 w-full max-w-screen-xl mx-auto">
-          <div className="flex items-center gap-4">
-            <button
-              className="p-2 hover:bg-neutral-50 rounded-full transition-all"
-              onClick={() => navigate(-1)}
-            >
-              <span className="material-symbols-outlined text-neutral-900">arrow_back</span>
-            </button>
-            <div
-              className="text-2xl font-black italic text-[var(--color-primary)] tracking-tight cursor-pointer"
-              style={{ fontFamily: 'var(--font-headline)' }}
-              onClick={() => navigate('/')}
-            >
-              FuyFood
-            </div>
-          </div>
-          <h1 className="font-bold text-lg tracking-tight" style={{ fontFamily: 'var(--font-headline)' }}>
-            Your Cart
-          </h1>
-          <button
-            className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-error)] transition-colors p-2"
-            onClick={clearAll}
-            title="Clear cart"
-          >
-            <span className="material-symbols-outlined">delete_sweep</span>
-          </button>
-        </div>
-      </header>
+      <TopNavBar
+        simplified
+        pageTitle="Cart"
+        hideCartLink
+        actionButton={{ label: 'CLEAR CART', icon: 'delete', onClick: clearCart }}
+      />
 
       <main className="pt-24 pb-40 px-4 max-w-screen-xl mx-auto">
         {/* Empty state */}

@@ -30,6 +30,15 @@ const nearbyRestaurants: NearbyRestaurant[] = popularRestaurants.map(r => ({
   promos: r.isPromo ? [{ text: 'PROMO', color: 'primary' as const }] : r.isFreeShipping ? [{ text: 'FREE SHIPPING', color: 'tertiary' as const }] : [],
 }));
 
+const parseDistance = (distance: string): number => {
+  const value = parseFloat(distance.replace(',', '.'));
+  return distance.includes('m') ? value / 1000 : value;
+};
+
+const sortedNearbyRestaurants = [...nearbyRestaurants].sort(
+  (a, b) => parseDistance(a.distance) - parseDistance(b.distance)
+);
+
 const FILTERS = ['Distance', 'Rating 4.5+', 'Fast Delivery', 'Free Shipping', 'Promo'];
 
 // ---- Skeleton Card ----
@@ -58,13 +67,25 @@ export default function RestaurantListPage() {
   const [favourites, setFavourites] = useState<Set<string>>(new Set());
 
   // Filter restaurants based on category
-  const filteredRestaurants = categoryFilter
-    ? nearbyRestaurants.filter(restaurant =>
-        restaurant.tags.some(tag =>
-          tag.toLowerCase().includes(categoryFilter.toLowerCase())
-        )
-      )
-    : nearbyRestaurants;
+  const filteredRestaurants = (() => {
+    if (!categoryFilter) return sortedNearbyRestaurants;
+
+    const category = categoryFilter.toLowerCase();
+    if (category === 'all') return sortedNearbyRestaurants;
+
+    const matched = sortedNearbyRestaurants.filter(restaurant =>
+      restaurant.tags.some(tag => tag.toLowerCase().includes(category)) ||
+      restaurant.name.toLowerCase().includes(category)
+    );
+
+    if (matched.length >= 5) return matched;
+
+    const supplement = sortedNearbyRestaurants.filter(
+      restaurant => !matched.includes(restaurant)
+    );
+
+    return [...matched, ...supplement].slice(0, 5);
+  })();
 
   const toggleFav = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();

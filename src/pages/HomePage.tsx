@@ -35,6 +35,16 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
+  const parseDistance = (distance: string): number => {
+    const value = parseFloat(distance.replace(',', '.'));
+    if (distance.includes('m')) {
+      return value / 1000;
+    }
+    return value;
+  };
+
+  const sortedPopularRestaurants = [...popularRestaurants].sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance));
+
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
       <TopNavBar />
@@ -104,7 +114,7 @@ export default function HomePage() {
                   <div className="h-3 bg-[var(--color-surface-container-high)] rounded w-3/4"></div>
                 </div>
               )) :
-              popularRestaurants.map(r => <RestaurantCard key={r.id} restaurant={r} />)
+              sortedPopularRestaurants.map(r => <RestaurantCard key={r.id} restaurant={r} />)
             }
           </div>
         </section>
