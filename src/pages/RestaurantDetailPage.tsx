@@ -6,7 +6,7 @@ import ImageWithFallback from '../components/shared/ImageWithFallback';
 import { useCart } from '../context/CartContext';
 import { urbanUmamiMenu, type MenuItem } from '../data/mockData';
 
-const menuSections = ['Popular Now', 'Sushi Rolls'];
+const menuSections = ['Popular Now', 'Sushi Rolls', 'Signature Ramen', 'Appetizers', 'Beverages', 'Desserts'];
 
 export default function RestaurantDetailPage() {
   const navigate = useNavigate();

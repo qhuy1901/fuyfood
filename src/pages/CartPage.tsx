@@ -35,7 +35,7 @@ export default function CartPage() {
         actionButton={{ label: 'CLEAR CART', icon: 'delete', onClick: clearCart }}
       />
 
-      <main className="pt-24 pb-40 px-4 max-w-screen-xl mx-auto">
+      <main className="pt-8 pb-40 px-4 max-w-screen-xl mx-auto">
         {/* Empty state */}
         {isEmpty && (
           <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">

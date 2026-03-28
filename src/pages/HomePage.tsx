@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import CategoryChip from '../components/shared/CategoryChip';
@@ -10,6 +10,8 @@ import { categories, flashSaleItems, popularRestaurants, trendingRestaurants } f
 export default function HomePage() {
   const [timeLeft, setTimeLeft] = useState('02:14:55');
   const [loadingPopular, setLoadingPopular] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const decrementTime = (timeStr: string): string => {
     const [hours, minutes, seconds] = timeStr.split(':').map(Number);
@@ -35,6 +37,13 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    const path = query ? `/restaurants?search=${encodeURIComponent(query)}` : '/restaurants';
+    navigate(path);
+  };
+
   const parseDistance = (distance: string): number => {
     const value = parseFloat(distance.replace(',', '.'));
     if (distance.includes('m')) {
@@ -52,16 +61,22 @@ export default function HomePage() {
       <main className="max-w-screen-2xl mx-auto px-4 md:px-6 pb-24 md:pb-12">
         {/* Search */}
         <section className="sticky top-[72px] z-40 py-4 bg-[var(--color-background)]">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <span className="material-symbols-outlined text-[var(--color-on-surface-variant)]">search</span>
-            </div>
+          <form className="relative" onSubmit={handleSearch}>
             <input
-              className="w-full pl-12 pr-4 py-4 bg-[var(--color-surface-container-lowest)] border-none rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 placeholder:text-[var(--color-on-surface-variant)]/60 font-medium"
+              className="w-full pl-5 pr-12 py-4 bg-[var(--color-surface-container-lowest)] border-none rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 placeholder:text-[var(--color-on-surface-variant)]/60 font-medium"
               placeholder="Craving ramen, pizza, or sushi?"
               type="text"
+              value={searchQuery}
+              onChange={event => setSearchQuery(event.target.value)}
             />
-          </div>
+            <button
+              type="submit"
+              className="absolute inset-y-0 right-3 flex items-center justify-center px-3 text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]"
+              aria-label="Search"
+            >
+              <span className="material-symbols-outlined">search</span>
+            </button>
+          </form>
         </section>
 
         {/* Category Grid */}

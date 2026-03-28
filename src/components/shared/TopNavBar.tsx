@@ -91,6 +91,15 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
               <span className="text-xs font-bold">{actionButton.label}</span>
             </button>
           )}
+          {!simplified && (
+            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary-fixed)]">
+              <img
+                alt="User profile"
+                className="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRjDkTopnBnRbIM1cATM9hTXk_UOVzj1W1MgL2WjpelbxD7TkaTNGE8xv6CzA_q869milMn3KZWGFb8nN1RIbcTIucfEUrrJQNmuInp3vjFuK8uxEfkECan__IgQoeI14LuXukYM4ecWfVanvVgLgVSG-g1EG8CnJ-y2egbgAa-NEBU1tQ2MhzgDZkhKtqs0E7lNtCML1ZxmNcZQ3CZUWZbAgi_Ok_mMqUanhULU-I5pEnpb2JUor5PdxCfye5OA0bmDiFqXTaC8C0"
+              />
+            </div>
+          )}
           {simplified && (
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary-fixed)]">
               <img

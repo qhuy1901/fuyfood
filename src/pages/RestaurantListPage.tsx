@@ -15,6 +15,7 @@ interface NearbyRestaurant {
   distance: string;
   deliveryTime: string;
   tags: string[];
+  cuisine: string;
   promos: Array<{ text: string; color: 'primary' | 'tertiary' }>;
 }
 
@@ -27,6 +28,7 @@ const nearbyRestaurants: NearbyRestaurant[] = popularRestaurants.map(r => ({
   distance: r.distance,
   deliveryTime: r.deliveryTime,
   tags: r.tags,
+  cuisine: r.cuisine,
   promos: r.isPromo ? [{ text: 'PROMO', color: 'primary' as const }] : r.isFreeShipping ? [{ text: 'FREE SHIPPING', color: 'tertiary' as const }] : [],
 }));
 
@@ -65,9 +67,19 @@ export default function RestaurantListPage() {
 
   const [activeFilter, setActiveFilter] = useState('Distance');
   const [favourites, setFavourites] = useState<Set<string>>(new Set());
+  const searchQuery = searchParams.get('search')?.trim();
+  const normalizedSearch = searchQuery?.toLowerCase() ?? '';
 
-  // Filter restaurants based on category
+  // Filter restaurants based on search or category
   const filteredRestaurants = (() => {
+    if (searchQuery) {
+      return sortedNearbyRestaurants.filter(restaurant =>
+        restaurant.name.toLowerCase().includes(normalizedSearch) ||
+        restaurant.cuisine.toLowerCase().includes(normalizedSearch) ||
+        restaurant.tags.some(tag => tag.toLowerCase().includes(normalizedSearch))
+      );
+    }
+
     if (!categoryFilter) return sortedNearbyRestaurants;
 
     const category = categoryFilter.toLowerCase();
@@ -146,14 +158,39 @@ export default function RestaurantListPage() {
           </button>
         </div>
 
-        {/* Restaurant grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredRestaurants.map(restaurant => (
-            <article
-              key={restaurant.id}
-              className="group cursor-pointer"
-              onClick={() => navigate(`/restaurant/${restaurant.id}`)}
+        {/* Restaurant list or empty state */}
+        {filteredRestaurants.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-[var(--color-surface-container-high)] bg-[var(--color-surface)] p-12 text-center">
+            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-surface-container-high)] text-5xl">
+              <span>🥺</span>
+            </div>
+            <h2 className="text-2xl font-black mb-3" style={{ fontFamily: 'var(--font-headline)' }}>
+              No restaurants found
+            </h2>
+            <p className="max-w-xl mx-auto text-[var(--color-on-surface-variant)] mb-6">
+              {searchQuery
+                ? `We couldn’t find any restaurants matching "${searchQuery}". Try another cuisine, keyword, or clear your search.`
+                : categoryFilter
+                ? `No restaurants matched the selected category "${categoryFilter}". Try a different category or clear the filter.`
+                : 'No restaurants are available right now. Please try again later.'}
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate('/restaurants')}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-primary-container)]"
             >
+              <span className="material-symbols-outlined">refresh</span>
+              Try Again
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredRestaurants.map(restaurant => (
+              <article
+                key={restaurant.id}
+                className="group cursor-pointer"
+                onClick={() => navigate(`/restaurant/${restaurant.id}`)}
+              >
               {/* Image */}
               <div className="relative aspect-video overflow-hidden rounded-2xl mb-3 shadow-sm group-hover:shadow-md transition-shadow">
                 <img
@@ -237,6 +274,7 @@ export default function RestaurantListPage() {
           <SkeletonCard opacity={0.4} />
           <SkeletonCard opacity={0.2} />
         </div>
+        )}
       </main>
 
       <BottomNavBar />
