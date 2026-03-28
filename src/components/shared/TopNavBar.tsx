@@ -72,7 +72,7 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
             </button>
           )}
           {!hideCartLink && (
-            <Link to="/cart" className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
+            <Link to="/cart" className="nav-cart-target p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
               <span className="material-symbols-outlined">shopping_cart</span>
               {cartCount > 0 && (
                 <span className="absolute top-0 right-0 min-w-[18px] h-5 rounded-full bg-[var(--color-primary)] text-[10px] font-black text-white flex items-center justify-center border-2 border-white">

@@ -21,7 +21,7 @@ export default function BottomNavBar() {
           <Link
             key={tab.label}
             to={tab.path}
-            className={`flex flex-col items-center justify-center px-5 py-2 transition-transform duration-200 active:scale-90 rounded-2xl ${
+            className={`flex flex-col items-center justify-center px-5 py-2 transition-transform duration-200 active:scale-90 rounded-2xl ${tab.label === 'Cart' ? 'nav-cart-target ' : ''}${
               isActive
                 ? 'bg-orange-50 text-orange-600'
                 : 'text-neutral-400 hover:text-orange-500'

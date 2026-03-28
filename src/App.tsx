@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/shared/ScrollToTop';
 import HomePage from './pages/HomePage';
 import RestaurantDetailPage from './pages/RestaurantDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -11,6 +12,7 @@ import NearbyRestaurantsPage from './pages/NearbyRestaurantsPage';
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
