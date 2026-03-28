@@ -1,60 +1,28 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNavBar from '../components/shared/BottomNavBar';
-
-// ---- Types ----
-interface CartItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  qty: number;
-  imageUrl: string;
-}
-
-// ---- Initial cart data (from Stitch design) ----
-const initialItems: CartItem[] = [
-  {
-    id: 'c1',
-    name: 'Margherita Classica',
-    description: 'Large • Extra Cheese • Thin Crust',
-    price: 18.50,
-    qty: 1,
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB4tH6P_zVRwSIAYYpb8r4jpVOeTKbC-2fX9rn3oW45Wn1kVIfU_MbuJJbf6rBEiueRPX3MydyhKidl_WoIowjBQyBrebSJcp4TmRl9SzZ_XV3Zb_oYlZU-Pj2-avcjAtICm4132M1ySeEjnNEDW9sfkUT_MVedvd6hK9V8EeCtbW0qYjarHLCS061GjpbKd7zPgRyvLzr-vckq6LdCMwIJjM7nPS9rFiOBSBBFOcVRfzrSAwBJL9GjMI5_rYMoj3VnFcC98ssIy1sX',
-  },
-  {
-    id: 'c2',
-    name: 'Authentic Tiramisu',
-    description: 'Regular • Low Sugar',
-    price: 12.00,
-    qty: 2,
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCNjIdHlE5Gt-vDqde3gA2F_PCim0gZ3H4rShOzgUrR7xM1CgDBSY_CcGiFAoecGK05_8VLtALMhqhC4kUtDEexTZy0pGUH2NC4CuYQsoPu8NGwwOsAuTr74u9WOKSpqeuxyik88P1D2fkNZRAAMGM7GIHOvptbHMmwN13hO-OlZolA77YyfrPg_Ie7NQdGLMzrJ63w8JhavZB_Vpqlz_f6fenrQmsY1VbCxttNyJ_T36FrndqyzxqxL2v49cVtkZXJ2Vl7OnQvigfq',
-  },
-];
+import { useCart } from '../context/CartContext';
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<CartItem[]>(initialItems);
+  const { state, updateQty, removeItem, clearCart } = useCart();
+  const items = state.items;
   const [note, setNote] = useState('');
 
-  const updateQty = (id: string, delta: number) => {
-    setItems(prev =>
-      prev
-        .map(item => item.id === id ? { ...item, qty: item.qty + delta } : item)
-        .filter(item => item.qty > 0)
-    );
+  const handleUpdateQty = (cartItemId: string, delta: number) => {
+    const item = items.find(item => item.cartItemId === cartItemId);
+    if (!item) return;
+    updateQty(cartItemId, item.quantity + delta);
   };
 
-  const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
-  const clearAll = () => setItems([]);
+  const removeItemById = (cartItemId: string) => removeItem(cartItemId);
+  const clearAll = () => clearCart();
 
-  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const deliveryFee = 2.00;
-  const serviceFee = 1.50;
+  const subtotal = items.reduce((s, i) => s + i.basePrice * i.quantity, 0);
+  const deliveryFee = 2.0;
+  const serviceFee = 1.5;
   const total = subtotal + deliveryFee + serviceFee;
-  const itemCount = items.reduce((s, i) => s + i.qty, 0);
+  const itemCount = state.totalItems;
 
   const isEmpty = items.length === 0;
 
@@ -135,34 +103,34 @@ export default function CartPage() {
                 <div className="space-y-2">
                   {items.map((item, idx) => (
                     <div
-                      key={item.id}
+                      key={item.cartItemId}
                       className={`flex gap-4 py-4 ${idx < items.length - 1 ? 'border-b border-[var(--color-surface-container-low)]' : ''}`}
                     >
                       <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
-                        <img alt={item.name} src={item.imageUrl} className="w-full h-full object-cover" />
+                        <img alt={item.name} src={item.image} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-grow flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                           <div>
                             <h3 className="font-bold text-lg" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h3>
-                            <p className="text-sm text-[var(--color-on-surface-variant)] mt-1">{item.description}</p>
+                            <p className="text-sm text-[var(--color-on-surface-variant)] mt-1">{item.restaurantName}</p>
                           </div>
                           <span className="font-bold text-lg ml-4 flex-shrink-0" style={{ fontFamily: 'var(--font-headline)' }}>
-                            ${(item.price * item.qty).toFixed(2)}
+                            ${(item.totalPrice).toFixed(2)}
                           </span>
                         </div>
                         <div className="flex justify-between items-center mt-4">
                           {/* Qty stepper */}
                           <div className="flex items-center bg-[var(--color-surface-container-low)] rounded-full p-1 gap-4">
                             <button
-                              onClick={() => updateQty(item.id, -1)}
+                              onClick={() => handleUpdateQty(item.cartItemId, -1)}
                               className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--color-surface-container-lowest)] hover:bg-[var(--color-primary)] hover:text-white transition-colors shadow-sm"
                             >
                               <span className="material-symbols-outlined text-sm">remove</span>
                             </button>
-                            <span className="font-bold text-sm min-w-[20px] text-center">{item.qty}</span>
+                            <span className="font-bold text-sm min-w-[20px] text-center">{item.quantity}</span>
                             <button
-                              onClick={() => updateQty(item.id, 1)}
+                              onClick={() => handleUpdateQty(item.cartItemId, 1)}
                               className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--color-surface-container-lowest)] hover:bg-[var(--color-primary)] hover:text-white transition-colors shadow-sm"
                             >
                               <span className="material-symbols-outlined text-sm">add</span>
@@ -170,7 +138,7 @@ export default function CartPage() {
                           </div>
                           {/* Delete */}
                           <button
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeItemById(item.cartItemId)}
                             className="text-[var(--color-on-surface-variant)]/40 hover:text-[var(--color-error)] transition-colors"
                           >
                             <span className="material-symbols-outlined text-lg">delete</span>

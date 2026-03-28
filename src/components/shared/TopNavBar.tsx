@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useLocation as useUserLocation } from '../../hooks/useLocation';
+import { useCart } from '../../context/CartContext';
 
 interface TopNavBarProps {
   readonly simplified?: boolean;
@@ -8,6 +9,8 @@ interface TopNavBarProps {
 
 export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarProps) {
   const { locationText, loadingLocation } = useUserLocation();
+  const { state } = useCart();
+  const cartCount = state.totalItems;
   const location = useLocation();
   const activeNav = (path: string) =>
     location.pathname === path
@@ -64,7 +67,11 @@ export default function TopNavBar({ simplified = false, pageTitle }: TopNavBarPr
           )}
           <Link to="/cart" className="p-2 hover:bg-neutral-50 rounded-lg transition-all active:scale-95 relative">
             <span className="material-symbols-outlined">shopping_cart</span>
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-primary)] rounded-full" />
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-0 min-w-[18px] h-5 rounded-full bg-[var(--color-primary)] text-[10px] font-black text-white flex items-center justify-center border-2 border-white">
+                {cartCount}
+              </span>
+            )}
           </Link>
           {simplified && (
             <button className="p-2">

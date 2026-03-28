@@ -2,19 +2,28 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
-import { urbanUmamiMenu } from '../data/mockData';
+import { useCart } from '../context/CartContext';
+import { urbanUmamiMenu, type MenuItem } from '../data/mockData';
 
 const menuSections = ['Popular Now', 'Sushi Rolls'];
 
 export default function RestaurantDetailPage() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('Popular Now');
-  const [cartCount, setCartCount] = useState(3);
-  const [cartTotal, setCartTotal] = useState(48.75);
+  const { state, addItem } = useCart();
+  const restaurantId = 'urban-umami';
+  const restaurantName = 'Urban Umami';
 
-  const handleAdd = (price: number) => {
-    setCartCount(c => c + 1);
-    setCartTotal(t => t + price);
+  const handleAdd = (item: MenuItem) => {
+    addItem({
+      productId: item.id,
+      restaurantId,
+      restaurantName,
+      name: item.name,
+      image: item.imageUrl,
+      basePrice: item.price,
+      quantity: 1,
+    });
   };
 
   const filtered = urbanUmamiMenu.filter(item =>
@@ -114,7 +123,7 @@ export default function RestaurantDetailPage() {
                           <span className="font-extrabold text-lg text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-headline)' }}>${item.price.toFixed(2)}</span>
                         </div>
                         <button
-                          onClick={() => handleAdd(item.price)}
+                          onClick={() => handleAdd(item)}
                           className="absolute bottom-4 right-4 bg-[var(--color-primary)] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
                         >
                           <span className="material-symbols-outlined">add</span>
@@ -135,15 +144,15 @@ export default function RestaurantDetailPage() {
           <div className="flex items-center gap-4">
             <div className="relative">
               <span className="material-symbols-outlined text-3xl">shopping_bag</span>
-              <span className="absolute -top-2 -right-2 bg-[var(--color-primary)] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-neutral-900">{cartCount}</span>
+              <span className="absolute -top-2 -right-2 bg-[var(--color-primary)] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-neutral-900">{state.totalItems ?? 0}</span>
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/50 leading-none mb-1">Basket Total</p>
-              <p className="font-black text-xl" style={{ fontFamily: 'var(--font-headline)' }}>${cartTotal.toFixed(2)}</p>
+              <p className="font-black text-xl" style={{ fontFamily: 'var(--font-headline)' }}>${Number(state.totalPrice ?? 0).toFixed(2)}</p>
             </div>
           </div>
           <button
-            onClick={() => navigate('/checkout')}
+            onClick={() => navigate('/cart')}
             className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-container)] px-8 py-3 rounded-xl font-black text-sm tracking-tight transition-all active:scale-95 flex items-center gap-2"
             style={{ fontFamily: 'var(--font-headline)' }}
           >

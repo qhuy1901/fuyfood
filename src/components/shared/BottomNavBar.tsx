@@ -1,14 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
 
 const tabs = [
   { label: 'Explore', icon: 'explore', path: '/' },
-  { label: 'Cart', icon: 'shopping_bag', path: '/checkout' },
+  { label: 'Cart', icon: 'shopping_bag', path: '/cart' },
   { label: 'Orders', icon: 'receipt_long', path: '/orders' },
   { label: 'Profile', icon: 'person', path: '/profile' },
 ];
 
 export default function BottomNavBar() {
   const location = useLocation();
+  const { state } = useCart();
+  const cartCount = state.totalItems;
 
   return (
     <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 md:hidden bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-3xl z-50">
@@ -24,11 +27,18 @@ export default function BottomNavBar() {
                 : 'text-neutral-400 hover:text-orange-500'
             }`}
           >
-            <span
-              className={`material-symbols-outlined ${isActive ? 'fill-icon' : ''}`}
-            >
-              {tab.icon}
-            </span>
+            <div className="relative">
+              <span
+                className={`material-symbols-outlined ${isActive ? 'fill-icon' : ''}`}
+              >
+                {tab.icon}
+              </span>
+              {tab.label === 'Cart' && cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 min-w-[18px] h-5 rounded-full bg-[var(--color-primary)] text-white text-[10px] font-black flex items-center justify-center border-2 border-white">
+                  {cartCount}
+                </span>
+              )}
+            </div>
             <span className="text-[11px] font-semibold uppercase tracking-wider mt-1" style={{ fontFamily: 'var(--font-headline)' }}>
               {tab.label}
             </span>

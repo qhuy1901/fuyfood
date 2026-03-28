@@ -2,39 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
-import { addresses, paymentMethods, cartItems } from '../data/mockData';
+import { addresses, paymentMethods } from '../data/mockData';
 import { useCheckout } from '../hooks/useCheckout';
+import { useCart, type CartItem } from '../context/CartContext';
 
 // ── Sub-component: STORE + ORDERED ITEMS ──────────────────────────────────────
-const storeItems = [
-  {
-    id: 'si1',
-    name: 'Truffle Tagliatelle',
-    note: 'Size: Large, Extra Creamy',
-    qty: 1,
-    price: 18.50,
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA5E-2opfKXrh5dSREoQmndP-stbUXffcUG9JlIAtRNcf5e6g_pDx5fqgzAQY4H97gk-XYR-6UtoJI-AnVoMHUBJf4l_upL_oLeQnDm98VRFt2d7-KT1O6srntLPXoKMG4bP40ITYaVIH1Dz4Sjf9TzkHJyQKTEsfEL9r5PM2ColWkIqGAD_XWfFrwJy0t87h1DUX8-cuLt-xS53RAgvQJgV4H8Lyt1DmuXmzrH50RNKJr6Yc9N4nz6FVUsfPa3lQ5go-LLU9xfTC4h',
-  },
-  {
-    id: 'si2',
-    name: 'Burrata Caprese',
-    note: 'Size: Standard',
-    qty: 1,
-    price: 12.00,
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBO0Tw7XC88V5ecjn11oVditKNfdpAEAv3bb2AIRP6BOsAnwgfjzEhvUfL7eBb4YQ5hH6MfXeY77nyP2BGBit50cc-6yYj0U0oH5ptHNcecS1bMrxq98YdnFyKuLPoLpebPwhl9CUUl4fbL2DML4Z6TUklGt6Rz8bwahKwKBTwWzHu85EkalCcq6DLXptdKFG_-0xX_n_tF6jMP0yYh2A6V_s_cxk9HzRKyvCaQCVDJuIPXJSUPmTdMmEsyypWtjmuuX2n9JWEe35Ec',
-  },
-  {
-    id: 'si3',
-    name: 'Iced Lemonade',
-    note: 'No Ice',
-    qty: 1,
-    price: 2.00,
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAyFtLRsD1u26N_H7NwI5_pGMhQAGYxTNJ1Pfv5BY_my76F1NrVtra9cmSJFD8d4PekYfPgHSrBoGBuPkBWrpFvnLR0RQv32nH8igLNTftgKkW_PX7XkPIRdUEdnZJ-L4laY0Y170op2w5PNkoICoaSMMxfb9HZdYwJAY-SzujaCKzsuCrAJI92k_NEKIb02WhLeTqLEOCZmBbi-T9nMPcOiyBD5Eyr2MMBKIrskFma-3tGLYvQ8gwYiHpgxGnhRYyphm9uhLpt2Lnl',
-  },
-];
-
-function StoreOrderedItems() {
+function StoreOrderedItems({ items }: { items: CartItem[] }) {
   const [collapsed, setCollapsed] = useState(false);
+  const hasItems = items.length > 0;
 
   return (
     <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
@@ -63,20 +38,24 @@ function StoreOrderedItems() {
 
       {!collapsed && (
         <div className="space-y-1">
-          {storeItems.map((item, idx) => (
-            <div
-              key={item.id}
-              className={`flex items-center gap-4 py-3 ${idx < storeItems.length - 1 ? 'border-b border-[var(--color-surface-container-low)]' : ''}`}
-            >
-              <img alt={item.name} src={item.imageUrl} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h3>
-                <p className="text-[var(--color-on-surface-variant)] text-xs mt-0.5">{item.note}</p>
-                <p className="text-[var(--color-on-surface-variant)] text-xs mt-1">{item.qty}x</p>
+          {hasItems ? (
+            items.map((item, idx) => (
+              <div
+                key={item.cartItemId}
+                className={`flex items-center gap-4 py-3 ${idx < items.length - 1 ? 'border-b border-[var(--color-surface-container-low)]' : ''}`}
+              >
+                <img alt={item.name} src={item.image} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h3>
+                  <p className="text-[var(--color-on-surface-variant)] text-xs mt-0.5">{item.restaurantName}</p>
+                  <p className="text-[var(--color-on-surface-variant)] text-xs mt-1">{item.quantity}x</p>
+                </div>
+                <span className="font-bold flex-shrink-0" style={{ fontFamily: 'var(--font-headline)' }}>${item.totalPrice.toFixed(2)}</span>
               </div>
-              <span className="font-bold flex-shrink-0" style={{ fontFamily: 'var(--font-headline)' }}>${item.price.toFixed(2)}</span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="py-6 text-center text-[var(--color-on-surface-variant)]">Your cart is empty.</div>
+          )}
         </div>
       )}
     </section>
@@ -159,7 +138,8 @@ export default function CheckoutPage() {
     isPlacingOrder, orderPlaced, placeOrder,
   } = useCheckout();
 
-  const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+  const { state } = useCart();
+  const subtotal = state.totalPrice;
   const serviceFee = 1.20;
   const discount = voucherApplied ? 5.00 : 0;
   const total = subtotal + serviceFee - discount;
@@ -231,7 +211,7 @@ export default function CheckoutPage() {
             </section>
 
             {/* ── NEW: STORE + ORDERED ITEMS ── */}
-            <StoreOrderedItems />
+            <StoreOrderedItems items={state.items} />
 
             {/* ── NEW: Customers also ordered ── */}
             <CustomersAlsoOrdered />
@@ -325,7 +305,7 @@ export default function CheckoutPage() {
               <h2 className="font-bold text-lg mb-6" style={{ fontFamily: 'var(--font-headline)' }}>Order Summary</h2>
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center text-[var(--color-on-surface-variant)]">
-                  <span>Subtotal ({cartItems.length} items)</span>
+                  <span>Subtotal ({state.totalItems} items)</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center text-[var(--color-on-surface-variant)]">
