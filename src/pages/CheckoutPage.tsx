@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
@@ -19,12 +19,12 @@ function StoreOrderedItems({ items }: { items: CartItem[] }) {
             <img
               alt="Store logo"
               className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3dGccMCs91T1eF7kYoaeyBvGmNxxZctmRt5ecxXoxBIeP3kiYVRCwB0341DAcAv3Dod5PbytaXSSi13WDB-hHAt3--5IfmCMm2TS25as0mGgOQi0p-x1Tyyef58iRYrSnlGL0BpcZud39izbO5b37CcgD0_Ocps7-LZ3PTIZicyzrvTTDe50bS-sjMRLcUr_BFWBbDP5UaDI0JJtYmIeRXZalj_stQlXOQOhZa09sQoWFxRjaXJwtpMWB5QfCP83EZBjZHManHctQ"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT75FQXP50q1yj9aOXL2-Eea3YBlLeQpdASRg&s"
             />
           </div>
           <div>
-            <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>La Trattoria del Gusto</h2>
-            <p className="text-[var(--color-on-surface-variant)] text-sm">Italian Gourmet</p>
+            <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h2>
+            <p className="text-[var(--color-on-surface-variant)] text-sm">Japanese Fusion • Ramen • Sushi</p>
           </div>
         </div>
         <button
@@ -138,7 +138,13 @@ export default function CheckoutPage() {
     isPlacingOrder, orderPlaced, placeOrder,
   } = useCheckout();
 
-  const { state } = useCart();
+  const { state, clearCart } = useCart();
+
+  useEffect(() => {
+    if (orderPlaced) {
+      clearCart();
+    }
+  }, [orderPlaced, clearCart]);
 
   const subtotal = state.totalPrice;
   const serviceFee = 1.20;
@@ -356,14 +362,14 @@ export default function CheckoutPage() {
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 relative h-48 rounded-2xl overflow-hidden group">
             <img
-              alt="La Trattoria del Gusto"
+              alt="Urban Umami"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5WxCER35kLHBrFxYFGT1xTixURE7jX29K8FTqUSOZ2Lhrlek8SGltwAX2zOUUKoQ535qjmNyKq_XM4PWmE0HL27TEOPdFtXQWxfE9SO0sHZsBVnOhqAsOWu9tfR02cviYIEx2H0GBg0h_hJQ6Tpr1Qwmo_iBY_N1FiO-jEROfQ9WoQoKNFDe5jOBNaKNLsnk38RL4KRoSPqmSC0rXaYzgwdvc21c8r_XlBXE_18papmJC_satnEPqH0p7R6Ai_OcnZ6waCHmwHunk"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxhgmW5TSvkqrgyyOaq0OXlENiPSnZrvAWDg&s"
             />
             <div className="absolute inset-0 flex items-end p-6" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }}>
               <div>
                 <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">Ordering from</p>
-                <h3 className="text-white font-bold text-2xl" style={{ fontFamily: 'var(--font-headline)' }}>La Trattoria del Gusto</h3>
+                <h3 className="text-white font-bold text-2xl" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h3>
               </div>
             </div>
           </div>

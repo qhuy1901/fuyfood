@@ -66,12 +66,12 @@ export default function CartPage() {
                     <img
                       alt="Store logo"
                       className="w-full h-full object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3dGccMCs91T1eF7kYoaeyBvGmNxxZctmRt5ecxXoxBIeP3kiYVRCwB0341DAcAv3Dod5PbytaXSSi13WDB-hHAt3--5IfmCMm2TS25as0mGgOQi0p-x1Tyyef58iRYrSnlGL0BpcZud39izbO5b37CcgD0_Ocps7-LZ3PTIZicyzrvTTDe50bS-sjMRLcUr_BFWBbDP5UaDI0JJtYmIeRXZalj_stQlXOQOhZa09sQoWFxRjaXJwtpMWB5QfCP83EZBjZHManHctQ"
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT75FQXP50q1yj9aOXL2-Eea3YBlLeQpdASRg&s"
                     />
                   </div>
                   <div>
-                    <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>La Trattoria del Gusto</h2>
-                    <p className="text-[var(--color-on-surface-variant)] text-sm">Italian Gourmet • 2.4 km</p>
+                    <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h2>
+                    <p className="text-[var(--color-on-surface-variant)] text-sm">Japanese Fusion • Ramen • Sushi • 1.2 km</p>
                   </div>
                 </div>
 

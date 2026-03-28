@@ -82,13 +82,13 @@ export default function HomePage() {
         <section className="mb-10">
           <div className="flex justify-between items-end mb-4">
             <div className="flex items-center gap-3">
+              <span className="text-[var(--color-warning)] text-3xl">🔥</span>
               <h2 className="text-2xl font-black tracking-tight" style={{ fontFamily: 'var(--font-headline)' }}>Flash Sale</h2>
               <div className="flex items-center gap-1 bg-[var(--color-primary)] text-white px-3 py-1 rounded-lg font-bold text-sm">
                 <span className="material-symbols-outlined text-sm">timer</span>
                 <span>{timeLeft}</span>
               </div>
             </div>
-            <Link to="/restaurants" className="text-[var(--color-primary)] font-bold text-sm hover:underline">View All</Link>
           </div>
           <div className="flex overflow-x-auto no-scrollbar gap-5 snap-x">
             {flashSaleItems.map(item => <FlashSaleCard key={item.id} item={item} />)}
@@ -99,10 +99,10 @@ export default function HomePage() {
         <section className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-black tracking-tight" style={{ fontFamily: 'var(--font-headline)' }}>Popular Near You</h2>
-            <button className="flex items-center gap-2 bg-[var(--color-surface-container-high)] px-4 py-2 rounded-full font-semibold text-sm">
-              <span>Filters</span>
-              <span className="material-symbols-outlined text-sm">tune</span>
-            </button>
+            <Link to="/restaurants" className="flex items-center gap-2 text-[var(--color-primary)] font-bold text-sm hover:underline">
+              <span>View All</span>
+              <span className="material-symbols-outlined text-sm">arrow_forward</span>
+            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {loadingPopular ?
