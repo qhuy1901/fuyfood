@@ -5,6 +5,7 @@ import BottomNavBar from '../components/shared/BottomNavBar';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
 import { calculateDynamicStatus, type OrderStatus } from '../utils/orderStatus';
+import RateRestaurantModal from '../components/RateRestaurantModal';
 
 interface Order {
   id: string;
@@ -37,6 +38,7 @@ export default function OrderDetailsPage() {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>('Order Placed');
+  const [isRateModalOpen, setIsRateModalOpen] = useState(false);
 
   const handleReorder = () => {
     if (!order) return;
@@ -297,6 +299,16 @@ export default function OrderDetailsPage() {
                 <span className="material-symbols-outlined">refresh</span>
                 Re-order this Meal
               </button>
+
+              {currentStatus === 'Delivered' && (
+                <button
+                  onClick={() => setIsRateModalOpen(true)}
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-500 text-white font-black transition-all hover:shadow-lg hover:shadow-orange-200 active:scale-95 flex items-center justify-center gap-2 mb-4"
+                >
+                  <span className="material-symbols-outlined">star</span>
+                  Rate Restaurant
+                </button>
+              )}
             </section>
 
             {/* 6. Need Help Button */}
@@ -319,6 +331,13 @@ export default function OrderDetailsPage() {
       </main>
 
       <BottomNavBar />
+
+      <RateRestaurantModal
+        isOpen={isRateModalOpen}
+        onClose={() => setIsRateModalOpen(false)}
+        restaurantName="Urban Umami"
+        restaurantImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT75FQXP50q1yj9aOXL2-Eea3YBlLeQpdASRg&s"
+      />
     </div>
   );
 }

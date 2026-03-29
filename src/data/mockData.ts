@@ -76,6 +76,16 @@ export interface OrderHistoryItem {
   imageUrl: string;
 }
 
+export interface Review {
+  id: string;
+  userName: string;
+  userImage?: string;
+  rating: number;
+  comment: string;
+  date: string;
+  images?: string[];
+}
+
 export interface TrackingStep {
   label: string;
   time: string;
@@ -1039,7 +1049,7 @@ export const orderHistory: OrderHistoryItem[] = [
   {
     id: 'oh1',
     restaurantName: "Mama's Italian Pizza",
-    date: 'Oct 24, 2023 • 12:45 PM',
+    date: 'Oct 24, 2025 • 12:45 PM',
     total: 34.50,
     status: 'Delivered',
     itemsSummary: 'Large Pepperoni Feast, Garlic Knots (6pcs), Diet Coke 500ml',
@@ -1048,7 +1058,7 @@ export const orderHistory: OrderHistoryItem[] = [
   {
     id: 'oh2',
     restaurantName: 'The Burger Collective',
-    date: 'Oct 21, 2023 • 7:15 PM',
+    date: 'Oct 21, 2025 • 7:15 PM',
     total: 22.80,
     status: 'Delivered',
     itemsSummary: 'Classic Wagyu Burger, Truffle Parmesan Fries, Vanilla Milkshake',
@@ -1057,7 +1067,7 @@ export const orderHistory: OrderHistoryItem[] = [
   {
     id: 'oh3',
     restaurantName: 'Green Garden Salads',
-    date: 'Oct 18, 2023 • 1:30 PM',
+    date: 'Oct 18, 2025 • 1:30 PM',
     total: 18.20,
     status: 'Cancelled',
     itemsSummary: 'Spicy Chicken Quinoa Bowl, Lemon Ginger Juice',
@@ -1066,7 +1076,7 @@ export const orderHistory: OrderHistoryItem[] = [
   {
     id: 'oh4',
     restaurantName: 'Sakura Sushi House',
-    date: 'Oct 15, 2023 • 8:45 PM',
+    date: 'Oct 15, 2025 • 8:45 PM',
     total: 52.00,
     status: 'Delivered',
     itemsSummary: 'Premium Omakase Box (12pcs), Miso Soup, Green Tea Mochi',
@@ -1300,4 +1310,41 @@ export const urbanUmamiMenu: MenuItem[] = [
     section: 'Desserts',
     imageUrl: 'https://dessertfirstgirl.com/images/2021/03/Yuzu-Meringue-Tart-front-769x1024.jpg',
   },
+];
+
+export const urbanUmamiReviews: Review[] = [
+  {
+    id: 'rev1',
+    userName: 'Ramna Smith',
+    userImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+    rating: 5,
+    comment: 'The Tsukemen ramen here is incredible! Best noodles in the city. A must-try.',
+    date: 'Oct 24, 2025',
+    images: ['https://images.unsplash.com/photo-1569718212165-3a8278d5f624']
+  },
+  {
+    id: 'rev2',
+    userName: 'Jose Yming',
+    userImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d',
+    rating: 5,
+    comment: 'Great vibe and friendly staff. The sushi was extremely fresh. Will be back for sure!',
+    date: 'Oct 22, 2025'
+  },
+  {
+    id: 'rev3',
+    userName: 'Gara Scharratt',
+    userImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e',
+    rating: 4,
+    comment: 'High quality food and excellent service. A bit pricey but worth every penny.',
+    date: 'Oct 20, 2025',
+    images: ['https://images.unsplash.com/photo-1553621042-f6e147245754']
+  },
+  {
+    id: 'rev4',
+    userName: 'Mara Tylar',
+    userImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
+    rating: 5,
+    comment: 'Love the minimalist layout and the food is just stunning. Best Japanese fusion at this price point.',
+    date: 'Oct 18, 2025'
+  }
 ];

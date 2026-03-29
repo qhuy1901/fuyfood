@@ -5,7 +5,8 @@ import BottomNavBar from '../components/shared/BottomNavBar';
 import ImageWithFallback from '../components/shared/ImageWithFallback';
 import { useCart } from '../context/CartContext';
 import { triggerFlyToCartAnimation } from '../utils/animations';
-import { urbanUmamiMenu, type MenuItem } from '../data/mockData';
+import { urbanUmamiMenu, urbanUmamiReviews, type MenuItem } from '../data/mockData';
+import CustomerReviews from '../components/CustomerReviews';
 
 const menuSections = ['Popular Now', 'Sushi Rolls', 'Signature Ramen', 'Appetizers', 'Beverages', 'Desserts'];
 
@@ -138,6 +139,11 @@ export default function RestaurantDetailPage() {
               );
             })}
           </div>
+        </div>
+
+        {/* Customer Reviews Section */}
+        <div className="px-6">
+          <CustomerReviews reviews={urbanUmamiReviews} />
         </div>
       </main>
 
