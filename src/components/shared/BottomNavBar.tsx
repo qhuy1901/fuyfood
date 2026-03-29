@@ -3,7 +3,7 @@ import { useCart } from '../../context/CartContext';
 
 const tabs = [
   { label: 'Explore', icon: 'explore', path: '/' },
-  { label: 'Cart', icon: 'shopping_bag', path: '/cart' },
+  { label: 'Wishlist', icon: 'favorite', path: '/wishlist' },
   { label: 'Orders', icon: 'receipt_long', path: '/orders' },
   { label: 'Profile', icon: 'person', path: '/profile' },
 ];

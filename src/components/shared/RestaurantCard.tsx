@@ -1,5 +1,7 @@
-import type { Restaurant } from '../../data/mockData';
 import { useNavigate } from 'react-router-dom';
+import type { Restaurant } from '../../data/mockData';
+import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
 import ImageWithFallback from './ImageWithFallback';
 
 interface RestaurantCardProps {
@@ -9,7 +11,20 @@ interface RestaurantCardProps {
 
 export default function RestaurantCard({ restaurant, variant = 'grid' }: RestaurantCardProps) {
   const navigate = useNavigate();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { user, openLoginModal } = useAuth();
   const scrollClass = variant === 'scroll' ? 'snap-start min-w-[300px] md:min-w-[400px]' : '';
+
+  const handleWishlistClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      openLoginModal();
+      return;
+    }
+    await toggleWishlist(restaurant.id);
+  };
+
+  const isFavorited = isInWishlist(restaurant.id);
 
   return (
     <div
@@ -22,6 +37,20 @@ export default function RestaurantCard({ restaurant, variant = 'grid' }: Restaur
           src={restaurant.imageUrl}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
+
+        {/* Wishlist Button */}
+        <button
+          onClick={handleWishlistClick}
+          className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 active:scale-90 shadow-lg z-10"
+        >
+          <span
+            className={`material-symbols-outlined text-[20px] transition-colors ${
+              isFavorited ? 'text-[var(--color-primary)] fill-icon' : 'text-neutral-400'
+            }`}
+          >
+            favorite
+          </span>
+        </button>
         <div className="absolute bottom-3 left-3 flex gap-2">
           {restaurant.isFreeShipping && (
             <span className="bg-[var(--color-primary)] text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">

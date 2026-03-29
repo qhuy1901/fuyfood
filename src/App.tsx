@@ -9,6 +9,7 @@ import OrderHistoryPage from './pages/OrderHistoryPage';
 import RestaurantListPage from './pages/RestaurantListPage';
 import CartPage from './pages/CartPage';
 import NearbyRestaurantsPage from './pages/NearbyRestaurantsPage';
+import WishlistPage from './pages/WishlistPage';
 import LoginModal from './components/shared/LoginModal';
 import { useAuth } from './context/AuthContext';
 
@@ -26,10 +27,10 @@ export default function App() {
         <Route path="/order/:id/tracking" element={<OrderTrackingPage />} />
         <Route path="/tracking/:id" element={<OrderTrackingPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
-        <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
         <Route path="/restaurants" element={<RestaurantListPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/nearby" element={<NearbyRestaurantsPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
       </Routes>
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </BrowserRouter>
