@@ -92,6 +92,18 @@ export interface TrackingStep {
   status: 'done' | 'active' | 'pending';
 }
 
+export interface Voucher {
+  id: string;
+  code: string;
+  label: string;
+  subtext: string;
+  discountPct?: number;
+  discountAmount?: number;
+  minSpend: number;
+  validUntil: string;
+  icon?: string;
+}
+
 // ---- Categories ----
 export const categories: Category[] = [
   { emoji: '🍚', label: 'Rice' },
@@ -1346,5 +1358,39 @@ export const urbanUmamiReviews: Review[] = [
     rating: 5,
     comment: 'Love the minimalist layout and the food is just stunning. Best Japanese fusion at this price point.',
     date: 'Oct 18, 2025'
+  }
+];
+
+// ---- Vouchers ----
+export const vouchers: Voucher[] = [
+  {
+    id: 'v1',
+    code: 'FUY19',
+    label: '19% OFF',
+    subtext: 'Special discount for your next meal!',
+    discountPct: 19,
+    minSpend: 2.00,
+    validUntil: 'Oct 30, 2026',
+    icon: 'confirmation_number'
+  },
+  // {
+  //   id: 'v2',
+  //   code: 'FREEFLY',
+  //   label: 'FREE DELIVERY',
+  //   subtext: 'No delivery fee on orders over $15',
+  //   discountAmount: 0, // Semantic for free delivery
+  //   minSpend: 15.00,
+  //   validUntil: 'Nov 15, 2026',
+  //   icon: 'local_shipping'
+  // },
+  {
+    id: 'v3',
+    code: 'WELCOME10',
+    label: '$10 OFF',
+    subtext: 'New user special discount',
+    discountAmount: 10.00,
+    minSpend: 50.00,
+    validUntil: 'Dec 31, 2026',
+    icon: 'card_giftcard'
   }
 ];

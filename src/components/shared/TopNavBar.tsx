@@ -20,7 +20,7 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
   const cartCount = state.totalItems;
   const location = useLocation();
   const { openLoginModal, user, loading: authLoading, signOut } = useAuth();
-  
+
   const activeNav = (path: string) =>
     location.pathname === path
       ? 'text-orange-600 border-b-2 border-orange-600 pb-1'
@@ -114,24 +114,24 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
                   </p>
                   <p className="text-[11px] text-neutral-400 truncate mt-0.5">{user.email}</p>
                 </div>
-                
+
                 <div className="px-2 space-y-1">
+                  <Link to="/profile" className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
+                    <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-[var(--color-primary)] transition-colors">person_outline</span>
+                    <span className="font-bold">Profile & Settings</span>
+                  </Link>
                   <Link to="/orders" className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
                     <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-[var(--color-primary)] transition-colors">receipt_long</span>
                     <span className="font-bold">My Orders</span>
                   </Link>
-                  <button className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
-                    <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-[var(--color-primary)] transition-colors">settings</span>
-                    <span className="font-bold">Account Settings</span>
-                  </button>
-                  <button className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
+                  {/* <button className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
                     <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-orange-500 transition-colors">card_membership</span>
                     <span className="font-bold">FuyFood Pro</span>
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="mt-2 pt-2 border-t border-neutral-50 px-2">
-                  <button 
+                  <button
                     onClick={() => signOut()}
                     className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-3 group/signout"
                   >
@@ -142,7 +142,7 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
               </div>
             </div>
           ) : (
-            <button 
+            <button
               onClick={() => openLoginModal()}
               className="px-5 py-2 font-bold text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-full transition-all active:scale-95 ml-2"
               style={{ fontFamily: 'var(--font-headline)' }}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
-import { orderHistory as mockHistory } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
 import { calculateDynamicStatus } from '../utils/orderStatus';
@@ -25,14 +25,11 @@ const statusStyle: Record<string, string> = {
   Active: 'bg-blue-100 text-blue-700',
 };
 
-const reorderFavorites = [
-  { name: "Mama's Italian Pizza", count: 5, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA05xG3hutIYspi7ci1YHVSpo0f78wpj85_xh8XreZXk5oaNR1yO6pKGcX73Q9CnUNjvyj2lr6Be330IvdGhoD0nr_KNP9v-7qJMnULW6PF1IS8zPwGY_P-zNgqsSRZAfh7aJGAo5OlhPb35OSZLlaKMjrZNx9WJ7iN7xYjhmtOGZPYkFNHh4E1_T_2lFXiuYY0udC92hqDs9auTRqDZF7QBqhlpA-2jwLrr9kVk4GsH2buN7zCCdFypiTYi4l1rdfAjcSHPL7vXWtj' },
-  { name: 'The Burger Collective', count: 3, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAu4A9klcj2pWTBFlaFfzKU9WOrg2NORBFypnyflXspA93KTGJ5MQkIApVBnxZuvm3qNk8hwBH7XFPg-4xd4jyTNzDy5hPzQs_fXas8dbV7V4Ug6cdxN6PYTLiFWySyrW7TeyDCC3BXvDAHJ4TMz9Oc5mJLnz8baKtLbBpbDg1jszPYabENvNkvKw0OG75QTSSE1LnIkC9wssaS0uiZ7x7e0X8bOoUTavpFDzc8DxejfQ_ITOpoMvtD6NTxG1XQwijHWdBLAgERZM08' },
-];
 
 export default function OrderHistoryPage() {
   const navigate = useNavigate();
   const { addItem, clearCart } = useCart();
+  const { user } = useAuth();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -83,8 +80,8 @@ export default function OrderHistoryPage() {
 
           return {
             id: order.id,
-            restaurantName: 'Urban Umami', 
-            restaurantId: 'r2', 
+            restaurantName: 'Urban Umami',
+            restaurantId: 'r2',
             date,
             total: Number(order.total_amount),
             status: dynamicStatus,
@@ -94,16 +91,38 @@ export default function OrderHistoryPage() {
           };
         });
 
-        setHistory(formatted.length > 0 ? formatted : mockHistory as any);
+        setHistory(formatted);
       } catch (err) {
         console.error('Error fetching history:', err);
-        setHistory(mockHistory as any);
+        setHistory([]);
       } finally {
         setLoading(false);
       }
     }
     fetchHistory();
   }, []);
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[var(--color-surface)]">
+        <TopNavBar />
+        <main className="max-w-screen-md mx-auto px-6 py-24 text-center">
+          <div className="w-24 h-24 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-5xl text-neutral-300" style={{ fontSize: '4rem' }}>receipt_long</span>
+          </div>
+          <h1 className="text-3xl font-black mb-4" style={{ fontFamily: 'var(--font-headline)' }}>Sign in to see your orders</h1>
+          <p className="text-neutral-500 mb-10 max-w-sm mx-auto font-medium">Keep track of your favorite meals and active deliveries by signing in to your account.</p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-10 py-4 bg-[var(--color-primary)] text-white rounded-full font-bold shadow-xl shadow-orange-100 hover:scale-105 active:scale-95 transition-all"
+          >
+            Go to Home
+          </button>
+        </main>
+        <BottomNavBar />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
       <TopNavBar />
@@ -136,8 +155,24 @@ export default function OrderHistoryPage() {
                 ))}
               </div>
             ) : history.length === 0 ? (
-              <div className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-12 text-center">
-                <p className="text-[var(--color-on-surface-variant)]">No orders yet. Time to start feasting!</p>
+              <div className="rounded-3xl border border-dashed border-[var(--color-surface-container-high)] bg-[var(--color-surface-container-lowest)] p-16 text-center shadow-sm">
+                <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-surface-container-low)] text-5xl">
+                  <span>🥡</span>
+                </div>
+                <h2 className="text-2xl font-black mb-3" style={{ fontFamily: 'var(--font-headline)' }}>
+                  Your orders is empty
+                </h2>
+                <p className="max-w-md mx-auto text-[var(--color-on-surface-variant)] mb-8 font-medium leading-relaxed">
+                  You haven't ordered anything yet. Time to start feasting and discover the best flavors around you!
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate('/')}
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary)] px-8 py-4 text-sm font-bold text-white transition-all transform hover:scale-105 active:scale-95 shadow-xl shadow-orange-200"
+                >
+                  <span className="material-symbols-outlined">explore</span>
+                  Start Exploring
+                </button>
               </div>
             ) : (
               history.map(order => (
@@ -185,27 +220,6 @@ export default function OrderHistoryPage() {
 
           {/* Sidebar */}
           <aside className="lg:col-span-4 space-y-6">
-            {/* Re-order favorites */}
-            <div className="bg-[var(--color-surface-container-low)] rounded-2xl p-6">
-              <h4 className="text-lg font-bold mb-4" style={{ fontFamily: 'var(--font-headline)' }}>Re-order Favorites</h4>
-              <div className="space-y-4">
-                {reorderFavorites.map(fav => (
-                  <div key={fav.name} className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                      <img alt={fav.name} src={fav.img} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-grow min-w-0">
-                      <p className="font-bold text-sm truncate">{fav.name}</p>
-                      <p className="text-[var(--color-on-surface-variant)] text-xs">Ordered {fav.count} times</p>
-                    </div>
-                    <button className="p-2 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 rounded-full transition-colors">
-                      <span className="material-symbols-outlined text-base">add_shopping_cart</span>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4">
               {[

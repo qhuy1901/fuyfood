@@ -8,7 +8,7 @@ import RestaurantCard from '../components/shared/RestaurantCard';
 import { categories, flashSaleItems, popularRestaurants, trendingRestaurants } from '../data/mockData';
 
 export default function HomePage() {
-  const [timeLeft, setTimeLeft] = useState('02:14:55');
+  const [timeLeft, setTimeLeft] = useState('00:25:55');
   const [loadingPopular, setLoadingPopular] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();

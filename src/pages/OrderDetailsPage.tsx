@@ -70,7 +70,7 @@ export default function OrderDetailsPage() {
 
         if (orderErr) throw orderErr;
         setOrder(orderData);
-        
+
         if (orderData) {
           setCurrentStatus(calculateDynamicStatus(orderData));
         }
@@ -116,7 +116,7 @@ export default function OrderDetailsPage() {
   if (!order) {
     return (
       <div className="min-h-screen bg-[var(--color-surface)] flex flex-col items-center justify-center p-6 text-center">
-        <span className="material-symbols-outlined text-6xl text-[var(--color-outline)] mb-4">error</span>
+        <span className="material-symbols-outlined text-6xl text-[var(--color-outline)] mb-4" style={{ fontSize: '4rem' }}>error</span>
         <h1 className="text-2xl font-bold mb-2">Order Not Found</h1>
         <p className="text-[var(--color-on-surface-variant)] mb-6">We couldn't find the order you're looking for.</p>
         <button onClick={() => navigate('/orders')} className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-full font-bold">Back to Orders</button>
@@ -164,10 +164,9 @@ export default function OrderDetailsPage() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-2 w-full md:w-auto">
-                  <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
-                    currentStatus === 'Delivered' ? 'bg-green-100 text-green-700' :
-                    currentStatus === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
-                  }`}>
+                  <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${currentStatus === 'Delivered' ? 'bg-green-100 text-green-700' :
+                      currentStatus === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                    }`}>
                     {currentStatus}
                   </span>
                   {isTrackingAvailable && (

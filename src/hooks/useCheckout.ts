@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { vouchers, type Voucher } from '../data/mockData';
 
 interface OrderData {
   subtotal: number;
@@ -22,8 +23,8 @@ interface CheckoutState {
   selectedAddressId: string;
   selectedPaymentId: string;
   voucherCode: string;
-  voucherApplied: boolean;
   deliveryNotes: string;
+  appliedVoucher: Voucher | null;
   isPlacingOrder: boolean;
   orderPlaced: boolean;
   orderId: string | null;
@@ -34,7 +35,7 @@ export function useCheckout() {
     selectedAddressId: 'a1',
     selectedPaymentId: 'pm1',
     voucherCode: '',
-    voucherApplied: false,
+    appliedVoucher: null,
     deliveryNotes: '',
     isPlacingOrder: false,
     orderPlaced: false,
@@ -54,7 +55,13 @@ export function useCheckout() {
   }, []);
 
   const applyVoucher = useCallback(() => {
-    setState(prev => ({ ...prev, voucherApplied: prev.voucherCode.length > 0 }));
+    const voucher = vouchers.find(v => v.code.toUpperCase() === state.voucherCode.toUpperCase());
+    setState(prev => ({ ...prev, appliedVoucher: voucher || null }));
+    return !!voucher;
+  }, [state.voucherCode]);
+
+  const selectVoucher = useCallback((voucher: Voucher) => {
+    setState(prev => ({ ...prev, appliedVoucher: voucher, voucherCode: voucher.code }));
   }, []);
 
   const setDeliveryNotes = useCallback((notes: string) => {
@@ -112,5 +119,5 @@ export function useCheckout() {
     }
   }, []);
 
-  return { ...state, setAddress, setPayment, setVoucherCode, applyVoucher, setDeliveryNotes, placeOrder };
+  return { ...state, setAddress, setPayment, setVoucherCode, applyVoucher, selectVoucher, setDeliveryNotes, placeOrder };
 }

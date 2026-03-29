@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
-import { addresses, paymentMethods } from '../data/mockData';
+import { addresses, paymentMethods, vouchers } from '../data/mockData';
 import { useCheckout } from '../hooks/useCheckout';
 import { useCart, type CartItem } from '../context/CartContext';
 
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
     selectedAddressId, setAddress,
     selectedPaymentId, setPayment,
     voucherCode, setVoucherCode,
-    voucherApplied, applyVoucher,
+    appliedVoucher, applyVoucher, selectVoucher,
     deliveryNotes, setDeliveryNotes,
     isPlacingOrder, orderPlaced, orderId, placeOrder,
   } = useCheckout();
@@ -172,8 +172,20 @@ export default function CheckoutPage() {
 
   const subtotal = state.totalPrice;
   const serviceFee = 1.20;
-  const discount = voucherApplied ? 5.00 : 0;
-  const total = subtotal + serviceFee - discount;
+  
+  // Dynamic discount calculation
+  let discount = 0;
+  if (appliedVoucher) {
+    if (subtotal >= appliedVoucher.minSpend) {
+      if (appliedVoucher.discountPct) {
+        discount = subtotal * (appliedVoucher.discountPct / 100);
+      } else if (appliedVoucher.discountAmount !== undefined) {
+        discount = appliedVoucher.discountAmount;
+      }
+    }
+  }
+
+  const total = Math.max(0, subtotal + serviceFee - discount);
 
   if (orderPlaced && orderId) {
     return (
@@ -332,30 +344,89 @@ export default function CheckoutPage() {
 
           {/* Right Column */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Voucher */}
+            {/* Voucher Center */}
             <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
-              <h2 className="font-bold text-lg mb-4" style={{ fontFamily: 'var(--font-headline)' }}>Voucher Center</h2>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-orange-50 border border-orange-100">
-                <span className="material-symbols-outlined text-orange-600 fill-icon">stars</span>
-                <div className="flex-1">
-                  <p className="text-xs font-bold text-orange-800">FuyFood Pro Perk</p>
-                  <p className="text-xs text-orange-700">Free Delivery Applied</p>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[var(--color-primary)] text-3xl">confirmation_number</span>
+                  <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>Voucher Center</h2>
                 </div>
-                <span className="material-symbols-outlined text-green-600">check_circle</span>
+                {appliedVoucher && (
+                    <span className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full">Applied</span>
+                )}
               </div>
-              <div className="relative mt-4">
+
+              {/* Promo Code Input */}
+              <div className="relative mb-8">
                 <input
-                  className="w-full bg-[var(--color-surface-container-low)] border-none rounded-full py-3 px-5 pr-20 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-container)]"
+                  className="w-full bg-[var(--color-surface-container-low)] border-none rounded-full py-4 px-6 pr-24 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-container)]"
                   placeholder="Enter Promo Code"
                   value={voucherCode}
                   onChange={e => setVoucherCode(e.target.value)}
                 />
                 <button
                   onClick={applyVoucher}
-                  className="absolute right-2 top-1.5 bottom-1.5 px-4 bg-[var(--color-primary)] text-white text-xs font-bold rounded-full hover:bg-[var(--color-primary-container)] transition-all"
+                  className="absolute right-2 top-2 bottom-2 px-6 bg-[var(--color-primary)] text-white text-xs font-black rounded-full hover:bg-[var(--color-primary-container)] transition-all shadow-md active:scale-95"
                 >
                   APPLY
                 </button>
+              </div>
+
+              {/* Available Vouchers List */}
+              <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-4">Available for you</h3>
+              <div className="space-y-3">
+                {vouchers.map(v => {
+                    const isApplicable = subtotal >= v.minSpend;
+                    const isSelected = appliedVoucher?.id === v.id;
+                    return (
+                        <div 
+                            key={v.id}
+                            className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${
+                                isSelected 
+                                ? 'bg-orange-50 border-[var(--color-primary)] shadow-sm' 
+                                : 'bg-white border-neutral-50 hover:border-orange-100'
+                            }`}
+                        >
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                                isSelected ? 'bg-[var(--color-primary)] text-white' : 'bg-neutral-50 text-neutral-400'
+                            }`}>
+                                <span className="material-symbols-outlined">{v.icon || 'star'}</span>
+                            </div>
+                            <div className="flex-grow min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <p className="font-black text-neutral-800 text-sm">{v.label}</p>
+                                    {!isApplicable && <span className="text-[9px] font-bold text-red-400 uppercase">Min. ${v.minSpend}</span>}
+                                </div>
+                                <p className="text-[11px] text-neutral-400 font-medium truncate">{v.subtext}</p>
+                            </div>
+                            <button 
+                                onClick={() => selectVoucher(v)}
+                                disabled={!isApplicable}
+                                className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${
+                                    isSelected
+                                    ? 'bg-green-500 text-white'
+                                    : isApplicable
+                                        ? 'bg-[var(--color-primary-fixed)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white'
+                                        : 'bg-neutral-100 text-neutral-300 cursor-not-allowed'
+                                }`}
+                            >
+                                {isSelected ? 'Applied' : 'Apply'}
+                            </button>
+                        </div>
+                    );
+                })}
+              </div>
+
+              {/* Special Pro Perk Message */}
+              <div className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-orange-50 to-white flex items-center gap-4 border border-orange-100/50">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                  <span className="material-symbols-outlined fill-icon">stars</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-black text-orange-800">FuyFood Pro Perk</p>
+                  <p className="text-xs text-orange-600/80">Stackable with vouchers!</p>
+                </div>
+                <span className="material-symbols-outlined text-green-600">check_circle</span>
               </div>
             </section>
 

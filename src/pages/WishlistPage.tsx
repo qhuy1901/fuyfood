@@ -4,21 +4,45 @@ import BottomNavBar from '../components/shared/BottomNavBar';
 import RestaurantCard from '../components/shared/RestaurantCard';
 import { popularRestaurants, trendingRestaurants } from '../data/mockData';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function WishlistPage() {
   const navigate = useNavigate();
   const { wishlist, loading } = useWishlist();
+  const { user } = useAuth();
 
   // Combine and deduplicate restaurants from mock data
   const allRestaurants = [...popularRestaurants, ...trendingRestaurants];
   const uniqueRestaurants = Array.from(new Map(allRestaurants.map(r => [r.id, r])).values());
-  
+
   // Filter based on wishlist IDs
   const favoritedRestaurants = uniqueRestaurants.filter(r => wishlist.includes(r.id));
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[var(--color-background)]">
+        <TopNavBar />
+        <main className="max-w-screen-md mx-auto px-6 py-24 text-center">
+          <div className="w-24 h-24 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-5xl text-neutral-300" style={{ fontSize: '4rem' }}>favorite</span>
+          </div>
+          <h1 className="text-3xl font-black mb-4" style={{ fontFamily: 'var(--font-headline)' }}>Sign in for your wishlist</h1>
+          <p className="text-neutral-500 mb-10 max-w-sm mx-auto font-medium">Keep track of the restaurants you love and never miss a flavor by signing in to your account.</p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-10 py-4 bg-[var(--color-primary)] text-white rounded-full font-bold shadow-xl shadow-orange-100 hover:scale-105 active:scale-95 transition-all"
+          >
+            Go to Home
+          </button>
+        </main>
+        <BottomNavBar />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
-      <TopNavBar simplified pageTitle="My Wishlist" />
+      <TopNavBar />
 
       <main className="pt-6 pb-28 max-w-screen-xl mx-auto px-4">
         {/* Header Section */}

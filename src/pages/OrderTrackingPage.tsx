@@ -44,10 +44,10 @@ export default function OrderTrackingPage() {
           .select('*')
           .eq('id', id)
           .single();
-        
+
         if (orderErr) throw orderErr;
         setOrder(orderData);
-        
+
         if (orderData) {
           setCurrentStatus(calculateDynamicStatus(orderData));
         }
@@ -56,7 +56,7 @@ export default function OrderTrackingPage() {
           .from('order_items')
           .select('*')
           .eq('order_id', id);
-        
+
         if (itemsErr) throw itemsErr;
         setItems(itemsData || []);
       } catch (err) {
@@ -70,7 +70,7 @@ export default function OrderTrackingPage() {
 
   useEffect(() => {
     if (!order) return;
-    
+
     const interval = setInterval(() => {
       const newStatus = calculateDynamicStatus(order);
       if (newStatus !== currentStatus) {
@@ -92,7 +92,7 @@ export default function OrderTrackingPage() {
   if (!order) {
     return (
       <div className="min-h-screen bg-[var(--color-background)] flex flex-col items-center justify-center p-6 text-center">
-        <span className="material-symbols-outlined text-6xl text-[var(--color-outline)] mb-4">error</span>
+        <span className="material-symbols-outlined text-6xl text-[var(--color-outline)] mb-4" style={{ fontSize: '4rem' }}>error</span>
         <h1 className="text-2xl font-bold mb-2">Order Not Found</h1>
         <p className="text-[var(--color-on-surface-variant)] mb-6">We couldn't find the order you're looking for.</p>
         <button onClick={() => navigate('/orders')} className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-full font-bold">Back to Orders</button>
@@ -103,7 +103,7 @@ export default function OrderTrackingPage() {
   // Map dynamic status to tracking steps
   const steps = mockSteps.map((step, idx) => {
     let status: 'done' | 'active' | 'pending' = 'pending';
-    
+
     const statusMap: Record<string, number> = {
       'Order Placed': 0,
       'Confirmed': 1,
@@ -121,9 +121,9 @@ export default function OrderTrackingPage() {
     } else if (currentStatus === 'Delivered') {
       status = 'done';
     }
-    
-    return { 
-      ...step, 
+
+    return {
+      ...step,
       status,
       time: order ? formatStepTime(step.label, order.created_at, status !== 'pending', order.delivered_at) : step.time
     };
@@ -140,9 +140,9 @@ export default function OrderTrackingPage() {
           <section className="bg-[var(--color-surface-container-lowest)] p-8 rounded-2xl shadow-[0_12px_32px_rgba(27,28,28,0.06)] relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 opacity-5 rounded-bl-full" style={{ background: 'linear-gradient(135deg, #b22204, #d63c1e)' }} />
             <h1 className="font-extrabold text-3xl tracking-tight mb-2" style={{ fontFamily: 'var(--font-headline)' }}>
-              {currentStatus === 'Order Placed' ? 'Order Received' : 
-               currentStatus === 'Confirmed' ? 'Kitchen is preparing' :
-               currentStatus === 'Delivering' ? 'Out for delivery' : 'Enjoy your meal!'}
+              {currentStatus === 'Order Placed' ? 'Order Received' :
+                currentStatus === 'Confirmed' ? 'Kitchen is preparing' :
+                  currentStatus === 'Delivering' ? 'Out for delivery' : 'Enjoy your meal!'}
             </h1>
             <p className="text-[var(--color-on-surface-variant)] text-sm mb-8 flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${currentStatus === 'Delivered' ? 'bg-green-500' : 'bg-[var(--color-primary)] animate-pulse'}`} />
