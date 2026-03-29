@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLocation as useUserLocation } from '../../hooks/useLocation';
 import { useCart } from '../../context/CartContext';
@@ -20,11 +21,25 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
   const cartCount = state.totalItems;
   const location = useLocation();
   const { openLoginModal, user, loading: authLoading, signOut } = useAuth();
+  
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const activeNav = (path: string) =>
     location.pathname === path
       ? 'text-orange-600 border-b-2 border-orange-600 pb-1'
       : 'text-neutral-600 hover:text-neutral-900 transition-colors';
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm glass-header">
@@ -98,8 +113,11 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
           {authLoading ? (
             <div className="w-10 h-10 rounded-full bg-neutral-100 animate-pulse ml-2" />
           ) : user ? (
-            <div className="group relative ml-2">
-              <button className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary)] transition-transform hover:scale-105 active:scale-95">
+            <div className="relative ml-2" ref={dropdownRef}>
+              <button 
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary)] transition-transform hover:scale-105 active:scale-95 flex-shrink-0"
+              >
                 <img
                   alt={user.user_metadata.full_name || 'User'}
                   className="w-full h-full object-cover"
@@ -107,7 +125,9 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
                 />
               </button>
               {/* Dropdown Menu */}
-              <div className="absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-neutral-50 z-[100] translate-y-2 group-hover:translate-y-0">
+              <div className={`absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] py-3 transition-all duration-300 border border-neutral-50 z-[100] ${
+                showDropdown ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'
+              }`}>
                 <div className="px-5 py-3 border-b border-neutral-50 mb-2">
                   <p className="text-sm font-black text-neutral-800 truncate" style={{ fontFamily: 'var(--font-headline)' }}>
                     {user.user_metadata.full_name || 'Anonymous User'}
@@ -116,23 +136,22 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
                 </div>
 
                 <div className="px-2 space-y-1">
-                  <Link to="/profile" className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
+                  <Link to="/profile" onClick={() => setShowDropdown(false)} className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
                     <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-[var(--color-primary)] transition-colors">person_outline</span>
                     <span className="font-bold">Profile & Settings</span>
                   </Link>
-                  <Link to="/orders" className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
+                  <Link to="/orders" onClick={() => setShowDropdown(false)} className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
                     <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-[var(--color-primary)] transition-colors">receipt_long</span>
                     <span className="font-bold">My Orders</span>
                   </Link>
-                  {/* <button className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
-                    <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-orange-500 transition-colors">card_membership</span>
-                    <span className="font-bold">FuyFood Pro</span>
-                  </button> */}
                 </div>
 
                 <div className="mt-2 pt-2 border-t border-neutral-50 px-2">
                   <button
-                    onClick={() => signOut()}
+                    onClick={() => {
+                      setShowDropdown(false);
+                      signOut();
+                    }}
                     className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-3 group/signout"
                   >
                     <span className="material-symbols-outlined text-xl text-red-400 group-hover/signout:text-red-600 transition-colors">logout</span>
