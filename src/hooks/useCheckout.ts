@@ -66,6 +66,9 @@ export function useCheckout() {
     
     try {
       // 1. Insert into orders
+      const now = new Date();
+      const deliveredAt = new Date(now.getTime() + 120000); // 2 minutes from now for quick testing
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -77,7 +80,8 @@ export function useCheckout() {
           delivery_address: orderData.delivery_address,
           notes: orderData.notes,
           payment_method: orderData.payment_method,
-          status: 'Pending'
+          status: 'Pending',
+          delivered_at: deliveredAt.toISOString()
         })
         .select()
         .single();

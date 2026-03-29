@@ -47,7 +47,7 @@ function StoreOrderedItems({ items }: { items: CartItem[] }) {
                 <img alt={item.name} src={item.image} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h3>
-                  <p className="text-[var(--color-on-surface-variant)] text-xs mt-0.5">{item.restaurantName}</p>
+                  <p className="text-[var(--color-on-surface-variant)] text-xs mt-0.5">Default Options</p>
                   <p className="text-[var(--color-on-surface-variant)] text-xs mt-1">{item.quantity}x</p>
                 </div>
                 <span className="font-bold flex-shrink-0" style={{ fontFamily: 'var(--font-headline)' }}>${item.totalPrice.toFixed(2)}</span>
@@ -92,6 +92,25 @@ const upsellItems = [
 
 function CustomersAlsoOrdered() {
   const [added, setAdded] = useState<Set<string>>(new Set());
+  const { state, addItem } = useCart();
+
+  const handleAddUpsell = (item: typeof upsellItems[0]) => {
+    // We assume the user is ordering from the current cart restaurant
+    const restaurantId = state.restaurantId || 'r2'; // Default to Urban Umami if not found
+    const restaurantName = state.restaurantName || 'Urban Umami';
+
+    addItem({
+      productId: item.id,
+      restaurantId,
+      restaurantName,
+      name: item.name,
+      image: item.imageUrl,
+      basePrice: item.price,
+      quantity: 1
+    });
+
+    setAdded(prev => new Set([...prev, item.id]));
+  };
 
   return (
     <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)] overflow-hidden">
@@ -106,12 +125,11 @@ function CustomersAlsoOrdered() {
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <button
-                onClick={() => setAdded(prev => new Set([...prev, item.id]))}
-                className={`absolute bottom-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all ${
-                  added.has(item.id)
+                onClick={() => handleAddUpsell(item)}
+                className={`absolute bottom-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all ${added.has(item.id)
                     ? 'bg-green-500 text-white scale-95'
                     : 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-container)]'
-                }`}
+                  }`}
               >
                 <span className="material-symbols-outlined text-[18px]">{added.has(item.id) ? 'check' : 'add'}</span>
               </button>
@@ -137,8 +155,14 @@ export default function CheckoutPage() {
     deliveryNotes, setDeliveryNotes,
     isPlacingOrder, orderPlaced, orderId, placeOrder,
   } = useCheckout();
-
   const { state, clearCart } = useCart();
+
+  // Sync note from cart on mount
+  useEffect(() => {
+    if (state.cartNote && !deliveryNotes) {
+      setDeliveryNotes(state.cartNote);
+    }
+  }, [state.cartNote, deliveryNotes, setDeliveryNotes]);
 
   useEffect(() => {
     if (orderPlaced) {
@@ -221,11 +245,10 @@ export default function CheckoutPage() {
                   <div
                     key={addr.id}
                     onClick={() => setAddress(addr.id)}
-                    className={`relative p-5 rounded-2xl cursor-pointer transition-all ${
-                      selectedAddressId === addr.id
+                    className={`relative p-5 rounded-2xl cursor-pointer transition-all ${selectedAddressId === addr.id
                         ? 'bg-[var(--color-primary-fixed)] border-2 border-[var(--color-primary-container)]'
                         : 'bg-[var(--color-surface-container-low)] hover:bg-[var(--color-surface-container-highest)] border-2 border-transparent'
-                    }`}
+                      }`}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
@@ -263,9 +286,8 @@ export default function CheckoutPage() {
                 {paymentMethods.map(pm => (
                   <label
                     key={pm.id}
-                    className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border-2 ${
-                      selectedPaymentId === pm.id ? 'border-[var(--color-primary-container)]' : 'border-transparent hover:border-[var(--color-primary-container)]'
-                    } bg-[var(--color-surface-container-low)]`}
+                    className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border-2 ${selectedPaymentId === pm.id ? 'border-[var(--color-primary-container)]' : 'border-transparent hover:border-[var(--color-primary-container)]'
+                      } bg-[var(--color-surface-container-low)]`}
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selectedPaymentId === pm.id ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-surface-container-highest)]'}`}>

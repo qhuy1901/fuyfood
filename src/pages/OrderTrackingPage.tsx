@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { trackingSteps as mockSteps } from '../data/mockData';
 import { supabase } from '../lib/supabase';
+
+import { calculateDynamicStatus, formatStepTime, type OrderStatus } from '../utils/orderStatus';
 
 interface Order {
   id: string;
   status: string;
   total_amount: number;
   created_at: string;
+  delivered_at?: string;
 }
 
 interface OrderItem {
@@ -22,9 +25,11 @@ interface OrderItem {
 
 export default function OrderTrackingPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>('Order Placed');
 
   useEffect(() => {
     async function fetchOrderData() {
@@ -34,7 +39,6 @@ export default function OrderTrackingPage() {
       }
       try {
         setLoading(true);
-        // Fetch order
         const { data: orderData, error: orderErr } = await supabase
           .from('orders')
           .select('*')
@@ -43,8 +47,11 @@ export default function OrderTrackingPage() {
         
         if (orderErr) throw orderErr;
         setOrder(orderData);
+        
+        if (orderData) {
+          setCurrentStatus(calculateDynamicStatus(orderData));
+        }
 
-        // Fetch items
         const { data: itemsData, error: itemsErr } = await supabase
           .from('order_items')
           .select('*')
@@ -61,6 +68,19 @@ export default function OrderTrackingPage() {
     fetchOrderData();
   }, [id]);
 
+  useEffect(() => {
+    if (!order) return;
+    
+    const interval = setInterval(() => {
+      const newStatus = calculateDynamicStatus(order);
+      if (newStatus !== currentStatus) {
+        setCurrentStatus(newStatus);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [order, currentStatus]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--color-background)] flex items-center justify-center">
@@ -71,32 +91,42 @@ export default function OrderTrackingPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-[var(--color-background)] flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold mb-4">Order Not Found</h1>
-        <button onClick={() => window.history.back()} className="text-[var(--color-primary)] font-bold">Go Back</button>
+      <div className="min-h-screen bg-[var(--color-background)] flex flex-col items-center justify-center p-6 text-center">
+        <span className="material-symbols-outlined text-6xl text-[var(--color-outline)] mb-4">error</span>
+        <h1 className="text-2xl font-bold mb-2">Order Not Found</h1>
+        <p className="text-[var(--color-on-surface-variant)] mb-6">We couldn't find the order you're looking for.</p>
+        <button onClick={() => navigate('/orders')} className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-full font-bold">Back to Orders</button>
       </div>
     );
   }
 
-  // Map database status to tracking steps
-  const currentStatus = order.status;
+  // Map dynamic status to tracking steps
   const steps = mockSteps.map((step, idx) => {
     let status: 'done' | 'active' | 'pending' = 'pending';
     
-    // Simplistic mapping for now
-    if (currentStatus === 'Pending') {
-      if (idx === 0) status = 'active';
-    } else if (currentStatus === 'Preparing') {
-      if (idx < 1) status = 'done';
-      if (idx === 1) status = 'active';
-    } else if (currentStatus === 'Delivering') {
-      if (idx < 3) status = 'done';
-      if (idx === 3) status = 'active';
-    } else if (currentStatus === 'Completed') {
+    const statusMap: Record<string, number> = {
+      'Order Placed': 0,
+      'Confirmed': 1,
+      'Preparing': 2,
+      'Delivering': 3,
+      'Delivered': 4
+    };
+
+    const currentIdx = statusMap[currentStatus] ?? 0;
+
+    if (idx < currentIdx) {
+      status = 'done';
+    } else if (idx === currentIdx) {
+      status = 'active';
+    } else if (currentStatus === 'Delivered') {
       status = 'done';
     }
     
-    return { ...step, status };
+    return { 
+      ...step, 
+      status,
+      time: order ? formatStepTime(step.label, order.created_at, status !== 'pending', order.delivered_at) : step.time
+    };
   });
 
   const displayId = order.id.slice(0, 8).toUpperCase();
@@ -110,10 +140,12 @@ export default function OrderTrackingPage() {
           <section className="bg-[var(--color-surface-container-lowest)] p-8 rounded-2xl shadow-[0_12px_32px_rgba(27,28,28,0.06)] relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 opacity-5 rounded-bl-full" style={{ background: 'linear-gradient(135deg, #b22204, #d63c1e)' }} />
             <h1 className="font-extrabold text-3xl tracking-tight mb-2" style={{ fontFamily: 'var(--font-headline)' }}>
-              {currentStatus === 'Pending' ? 'Order Received' : 'Order in Progress'}
+              {currentStatus === 'Order Placed' ? 'Order Received' : 
+               currentStatus === 'Confirmed' ? 'Kitchen is preparing' :
+               currentStatus === 'Delivering' ? 'Out for delivery' : 'Enjoy your meal!'}
             </h1>
             <p className="text-[var(--color-on-surface-variant)] text-sm mb-8 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
+              <span className={`w-2 h-2 rounded-full ${currentStatus === 'Delivered' ? 'bg-green-500' : 'bg-[var(--color-primary)] animate-pulse'}`} />
               Order #{displayId} from <span className="font-bold text-[var(--color-on-surface)] ml-1">Urban Umami</span>
             </p>
 
@@ -149,7 +181,12 @@ export default function OrderTrackingPage() {
           <section className="bg-[var(--color-surface-container-low)] p-6 rounded-2xl">
             <div className="flex justify-between items-center mb-6">
               <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-headline)' }}>Order Items</h2>
-              <span className="text-[var(--color-primary)] font-bold text-sm cursor-pointer hover:underline">View Receipt</span>
+              <span
+                onClick={() => navigate(`/order/${id}`)}
+                className="text-[var(--color-primary)] font-bold text-sm cursor-pointer hover:underline"
+              >
+                View Receipt
+              </span>
             </div>
             <div className="space-y-4">
               {items.map(item => (

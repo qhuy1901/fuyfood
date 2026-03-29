@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
@@ -7,10 +6,10 @@ import { useAuth } from '../context/AuthContext';
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { state, updateQty, removeItem, clearCart } = useCart();
+  const { state, updateQty, removeItem, clearCart, updateCartNote } = useCart();
   const { user, openLoginModal } = useAuth();
   const items = state.items;
-  const [note, setNote] = useState('');
+  const note = state.cartNote;
 
   const handleCheckout = () => {
     if (!user) {
@@ -103,7 +102,7 @@ export default function CartPage() {
                         <div className="flex justify-between items-start">
                           <div>
                             <h3 className="font-bold text-lg" style={{ fontFamily: 'var(--font-headline)' }}>{item.name}</h3>
-                            <p className="text-sm text-[var(--color-on-surface-variant)] mt-1">{item.restaurantName}</p>
+                            <p className="text-sm text-[var(--color-on-surface-variant)] mt-1">Default Options</p>
                           </div>
                           <span className="font-bold text-lg ml-4 flex-shrink-0" style={{ fontFamily: 'var(--font-headline)' }}>
                             ${(item.totalPrice).toFixed(2)}
@@ -152,7 +151,7 @@ export default function CartPage() {
                   className="w-full bg-[var(--color-surface-container-low)] border-none rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-container)] min-h-[100px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-variant)]/50 text-sm resize-none"
                   placeholder="E.g. Please leave at the front door or no onions please..."
                   value={note}
-                  onChange={e => setNote(e.target.value)}
+                  onChange={e => updateCartNote(e.target.value)}
                 />
               </section>
             </div>

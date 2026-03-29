@@ -4,15 +4,19 @@ import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { orderHistory as mockHistory } from '../data/mockData';
 import { supabase } from '../lib/supabase';
+import { useCart } from '../context/CartContext';
+import { calculateDynamicStatus } from '../utils/orderStatus';
 
 interface HistoryItem {
   id: string;
   restaurantName: string;
+  restaurantId: string;
   date: string;
   total: number;
   status: string;
   itemsSummary: string;
   imageUrl: string;
+  rawItems: any[];
 }
 
 const statusStyle: Record<string, string> = {
@@ -28,8 +32,26 @@ const reorderFavorites = [
 
 export default function OrderHistoryPage() {
   const navigate = useNavigate();
+  const { addItem, clearCart } = useCart();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleReorder = (order: HistoryItem, e: React.MouseEvent) => {
+    e.stopPropagation(); // Don't navigate to details
+    clearCart();
+    order.rawItems.forEach(item => {
+      addItem({
+        productId: item.id || 'r-item',
+        restaurantId: order.restaurantId,
+        restaurantName: order.restaurantName,
+        name: item.item_name,
+        image: item.image_url,
+        basePrice: item.unit_price,
+        quantity: item.quantity
+      });
+    });
+    navigate('/cart');
+  };
 
   useEffect(() => {
     async function fetchHistory() {
@@ -42,7 +64,7 @@ export default function OrderHistoryPage() {
 
         if (error) throw error;
 
-        const formatted: HistoryItem[] = (orders || []).map(order => {
+        const formatted: HistoryItem[] = (orders || []).map((order: any) => {
           const items = order.order_items || [];
           const summary = items.map((i: any) => `${i.quantity}x ${i.item_name}`).join(', ');
           const date = new Date(order.created_at).toLocaleDateString('en-US', {
@@ -53,14 +75,22 @@ export default function OrderHistoryPage() {
             minute: '2-digit',
           });
 
+          const dynamicStatus = calculateDynamicStatus({
+            created_at: order.created_at,
+            delivered_at: order.delivered_at,
+            status: order.status
+          });
+
           return {
             id: order.id,
-            restaurantName: 'Urban Umami', // Default for now as restaurant info isn't in orders table yet
+            restaurantName: 'Urban Umami', 
+            restaurantId: 'r2', 
             date,
             total: Number(order.total_amount),
-            status: order.status === 'Pending' ? 'Active' : order.status,
+            status: dynamicStatus,
             itemsSummary: summary || 'No items listed',
-            imageUrl: items[0]?.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
+            imageUrl: items[0]?.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+            rawItems: items
           };
         });
 
@@ -138,6 +168,7 @@ export default function OrderHistoryPage() {
                           View Details
                         </button>
                         <button
+                          onClick={(e) => handleReorder(order, e)}
                           className="text-[var(--color-on-primary)] px-6 py-2.5 rounded-full font-bold text-sm shadow-md hover:scale-105 transition-transform flex items-center gap-2"
                           style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container))' }}
                         >
@@ -177,7 +208,10 @@ export default function OrderHistoryPage() {
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4">
-              {[{ label: 'Orders', value: '24', color: 'text-[var(--color-primary)]' }, { label: 'Spent', value: '$542', color: 'text-[var(--color-on-surface)]' }].map(s => (
+              {[
+                { label: 'Orders', value: history.length.toString(), color: 'text-[var(--color-primary)]' },
+                { label: 'Spent', value: `$${history.reduce((sum, o) => sum + o.total, 0).toFixed(0)}`, color: 'text-[var(--color-on-surface)]' }
+              ].map(s => (
                 <div key={s.label} className="bg-white p-4 rounded-2xl shadow-sm border border-[var(--color-surface-container-high)]">
                   <p className="text-[var(--color-on-surface-variant)] text-[10px] font-black uppercase tracking-widest mb-1">{s.label}</p>
                   <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>

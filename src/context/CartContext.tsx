@@ -23,6 +23,7 @@ export interface CartState {
   totalPrice: number;
   restaurantId: string | null;
   restaurantName: string | null;
+  cartNote: string;
 }
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
@@ -32,6 +33,7 @@ type CartAction =
   | { type: 'REMOVE_ITEM'; cartItemId: string }
   | { type: 'UPDATE_QTY'; cartItemId: string; quantity: number }
   | { type: 'CLEAR_CART' }
+  | { type: 'UPDATE_NOTE'; note: string }
   | { type: 'LOAD_CART'; state: CartState };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -121,7 +123,10 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     }
 
     case 'CLEAR_CART':
-      return { items: [], totalItems: 0, totalPrice: 0, restaurantId: null, restaurantName: null };
+      return { items: [], totalItems: 0, totalPrice: 0, restaurantId: null, restaurantName: null, cartNote: '' };
+
+    case 'UPDATE_NOTE':
+      return { ...state, cartNote: action.note };
 
     default:
       return state;
@@ -138,6 +143,7 @@ const initialState: CartState = {
   totalPrice: 0,
   restaurantId: null,
   restaurantName: null,
+  cartNote: '',
 };
 
 function loadFromStorage(): CartState {
@@ -157,6 +163,7 @@ interface CartContextValue {
   addItem: (item: Omit<CartItem, 'cartItemId' | 'quantity' | 'totalPrice'> & { quantity?: number }) => void;
   removeItem: (cartItemId: string) => void;
   updateQty: (cartItemId: string, quantity: number) => void;
+  updateCartNote: (note: string) => void;
   clearCart: () => void;
 }
 
@@ -186,10 +193,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (cartItemId: string, quantity: number) => dispatch({ type: 'UPDATE_QTY', cartItemId, quantity }),
     []
   );
+  const updateCartNote = useCallback((note: string) => dispatch({ type: 'UPDATE_NOTE', note }), []);
   const clearCart = useCallback(() => dispatch({ type: 'CLEAR_CART' }), []);
 
   return (
-    <CartContext.Provider value={{ state, addItem, removeItem, updateQty, clearCart }}>
+    <CartContext.Provider value={{ state, addItem, removeItem, updateQty, updateCartNote, clearCart }}>
       {children}
     </CartContext.Provider>
   );

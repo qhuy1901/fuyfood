@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { supabase } from '../lib/supabase';
+import { useCart } from '../context/CartContext';
+import { calculateDynamicStatus, type OrderStatus } from '../utils/orderStatus';
 
 interface Order {
   id: string;
@@ -16,6 +18,7 @@ interface Order {
   notes: string;
   payment_method: string;
   created_at: string;
+  delivered_at?: string;
 }
 
 interface OrderItem {
@@ -29,9 +32,28 @@ interface OrderItem {
 export default function OrderDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addItem, clearCart } = useCart();
   const [order, setOrder] = useState<Order | null>(null);
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>('Order Placed');
+
+  const handleReorder = () => {
+    if (!order) return;
+    clearCart();
+    items.forEach(item => {
+      addItem({
+        productId: item.id || 'r-item',
+        restaurantId: 'r2', // Urban Umami
+        restaurantName: 'Urban Umami',
+        name: item.item_name,
+        image: item.image_url,
+        basePrice: item.unit_price,
+        quantity: item.quantity
+      });
+    });
+    navigate('/cart');
+  };
 
   useEffect(() => {
     async function fetchOrderDetails() {
@@ -46,6 +68,10 @@ export default function OrderDetailsPage() {
 
         if (orderErr) throw orderErr;
         setOrder(orderData);
+        
+        if (orderData) {
+          setCurrentStatus(calculateDynamicStatus(orderData));
+        }
 
         const { data: itemsData, error: itemsErr } = await supabase
           .from('order_items')
@@ -62,6 +88,20 @@ export default function OrderDetailsPage() {
     }
     fetchOrderDetails();
   }, [id]);
+
+  // Periodic status refresh
+  useEffect(() => {
+    if (!order) return;
+
+    const interval = setInterval(() => {
+      const newStatus = calculateDynamicStatus(order);
+      if (newStatus !== currentStatus) {
+        setCurrentStatus(newStatus);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [order, currentStatus]);
 
   if (loading) {
     return (
@@ -90,24 +130,24 @@ export default function OrderDetailsPage() {
     minute: '2-digit',
   });
 
-  const isTrackingAvailable = ['Pending', 'Preparing', 'Delivering'].includes(order.status);
+  const isTrackingAvailable = ['Order Placed', 'Confirmed', 'Delivering'].includes(currentStatus);
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
       <TopNavBar simplified pageTitle="Order Details" />
-      
+
       <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8 pb-40">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Summary & Items */}
           <div className="lg:col-span-8 space-y-6">
-            
+
             {/* 1. Restaurant Info Header */}
             <section className="bg-[var(--color-surface-container-lowest)] rounded-3xl p-6 md:p-8 shadow-[0_12px_32px_rgba(27,28,28,0.06)] border border-[var(--color-surface-container-low)]">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="flex items-center gap-5">
                   <div className="w-20 h-20 rounded-2xl bg-[var(--color-surface-container-highest)] flex items-center justify-center overflow-hidden flex-shrink-0 shadow-inner">
-                    <img 
-                      alt="Store logo" 
+                    <img
+                      alt="Store logo"
                       className="w-full h-full object-cover"
                       src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT75FQXP50q1yj9aOXL2-Eea3YBlLeQpdASRg&s"
                     />
@@ -123,13 +163,13 @@ export default function OrderDetailsPage() {
                 </div>
                 <div className="flex flex-col items-end gap-2 w-full md:w-auto">
                   <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
-                    order.status === 'Completed' ? 'bg-green-100 text-green-700' : 
-                    order.status === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                    currentStatus === 'Delivered' ? 'bg-green-100 text-green-700' :
+                    currentStatus === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
                   }`}>
-                    {order.status}
+                    {currentStatus}
                   </span>
                   {isTrackingAvailable && (
-                    <Link 
+                    <Link
                       to={`/order/${order.id}/tracking`}
                       className="flex items-center gap-2 py-2.5 px-6 rounded-xl bg-[var(--color-primary)] text-white text-sm font-bold transition-transform active:scale-95 shadow-md shadow-[var(--color-primary)]/20"
                     >
@@ -147,7 +187,7 @@ export default function OrderDetailsPage() {
                 <span className="w-8 h-8 rounded-lg bg-[var(--color-primary-container)] text-[var(--color-on-primary-container)] flex items-center justify-center text-sm">
                   {items.length}
                 </span>
-                Your Items
+                Order Items
               </h2>
               <div className="space-y-6">
                 {items.map((item, idx) => (
@@ -204,9 +244,9 @@ export default function OrderDetailsPage() {
             {/* 4. Payment Summary */}
             <section className="bg-[var(--color-surface-container-lowest)] rounded-3xl p-8 shadow-[0_12px_32px_rgba(27,28,28,0.06)] border border-[var(--color-surface-container-low)] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-primary-container)]/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-              
+
               <h2 className="text-xl font-bold mb-8 underline decoration-[var(--color-primary)] decoration-4 underline-offset-8" style={{ fontFamily: 'var(--font-headline)' }}>Payment Summary</h2>
-              
+
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between text-sm items-center">
                   <span className="text-[var(--color-on-surface-variant)]">Subtotal</span>
@@ -250,7 +290,8 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
 
-              <button 
+              <button
+                onClick={handleReorder}
                 className="w-full py-4 rounded-2x border-2 border-[var(--color-primary)] text-[var(--color-primary)] font-black transition-all hover:bg-[var(--color-primary)] hover:text-white active:scale-95 flex items-center justify-center gap-2 mb-4 rounded-2xl"
               >
                 <span className="material-symbols-outlined">refresh</span>
