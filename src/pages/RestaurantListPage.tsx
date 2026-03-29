@@ -110,7 +110,7 @@ export default function RestaurantListPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
-      <TopNavBar simplified pageTitle="Restaurants" />
+      <TopNavBar />
 
       <main className="pt-6 pb-28 max-w-screen-xl mx-auto px-4">
         {/* Location bar */}

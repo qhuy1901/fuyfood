@@ -41,18 +41,13 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
-      <TopNavBar
-        simplified
-        pageTitle="Cart"
-        hideCartLink
-        actionButton={{ label: 'CLEAR CART', icon: 'delete', onClick: clearCart }}
-      />
+      <TopNavBar hideCartLink />
 
       <main className="pt-8 pb-40 px-4 max-w-screen-xl mx-auto">
         {/* Empty state */}
         {isEmpty && (
           <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">
-            <span className="material-symbols-outlined text-8xl text-[var(--color-surface-container-highest)]">
+            <span className="material-symbols-outlined text-8xl text-[var(--color-surface-container-highest)]" style={{ fontSize: '4rem' }}>
               shopping_bag
             </span>
             <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-headline)' }}>Your cart is empty</h2>
@@ -74,18 +69,27 @@ export default function CartPage() {
               {/* Restaurant + Items */}
               <section className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)]">
                 {/* Store header */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-full bg-[var(--color-surface-container-highest)] flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img
-                      alt="Store logo"
-                      className="w-full h-full object-cover"
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT75FQXP50q1yj9aOXL2-Eea3YBlLeQpdASRg&s"
-                    />
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-[var(--color-surface-container-highest)] flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <img
+                        alt="Store logo"
+                        className="w-full h-full object-cover"
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT75FQXP50q1yj9aOXL2-Eea3YBlLeQpdASRg&s"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h2>
+                      <p className="text-[var(--color-on-surface-variant)] text-sm">Japanese Fusion • Ramen • Sushi • 0.2 km</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h2>
-                    <p className="text-[var(--color-on-surface-variant)] text-sm">Japanese Fusion • Ramen • Sushi • 0.2 km</p>
-                  </div>
+                  <button
+                    onClick={clearCart}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-red-500 hover:bg-red-50 font-bold text-xs transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-lg">delete_sweep</span>
+                    CLEAR
+                  </button>
                 </div>
 
                 {/* Item list */}
