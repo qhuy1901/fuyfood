@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import RestaurantDetailPage from './pages/RestaurantDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
+import OrderDetailsPage from './pages/OrderDetailsPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import RestaurantListPage from './pages/RestaurantListPage';
 import CartPage from './pages/CartPage';
@@ -21,7 +22,9 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order/:id" element={<OrderDetailsPage />} />
         <Route path="/order/:id/tracking" element={<OrderTrackingPage />} />
+        <Route path="/tracking/:id" element={<OrderTrackingPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
         <Route path="/restaurants" element={<RestaurantListPage />} />

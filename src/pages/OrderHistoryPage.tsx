@@ -1,6 +1,19 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
-import { orderHistory } from '../data/mockData';
+import { orderHistory as mockHistory } from '../data/mockData';
+import { supabase } from '../lib/supabase';
+
+interface HistoryItem {
+  id: string;
+  restaurantName: string;
+  date: string;
+  total: number;
+  status: string;
+  itemsSummary: string;
+  imageUrl: string;
+}
 
 const statusStyle: Record<string, string> = {
   Delivered: 'bg-green-100 text-green-700',
@@ -14,6 +27,53 @@ const reorderFavorites = [
 ];
 
 export default function OrderHistoryPage() {
+  const navigate = useNavigate();
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        setLoading(true);
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select('*, order_items(*)')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const formatted: HistoryItem[] = (orders || []).map(order => {
+          const items = order.order_items || [];
+          const summary = items.map((i: any) => `${i.quantity}x ${i.item_name}`).join(', ');
+          const date = new Date(order.created_at).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+
+          return {
+            id: order.id,
+            restaurantName: 'Urban Umami', // Default for now as restaurant info isn't in orders table yet
+            date,
+            total: Number(order.total_amount),
+            status: order.status === 'Pending' ? 'Active' : order.status,
+            itemsSummary: summary || 'No items listed',
+            imageUrl: items[0]?.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
+          };
+        });
+
+        setHistory(formatted.length > 0 ? formatted : mockHistory as any);
+      } catch (err) {
+        console.error('Error fetching history:', err);
+        setHistory(mockHistory as any);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchHistory();
+  }, []);
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
       <TopNavBar />
@@ -39,38 +99,44 @@ export default function OrderHistoryPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Order Feed */}
           <div className="lg:col-span-8 space-y-6">
-            {orderHistory.map(order => (
-              <div
-                key={order.id}
-                className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)] group hover:-translate-y-0.5 transition-all duration-300"
-              >
-                <div className="flex flex-col md:flex-row gap-6">
-                  <div className="w-full md:w-32 h-32 rounded-xl overflow-hidden flex-shrink-0">
-                    <img alt={order.restaurantName} src={order.imageUrl} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-grow">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-xl font-bold" style={{ fontFamily: 'var(--font-headline)' }}>{order.restaurantName}</h3>
-                          <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider ${statusStyle[order.status]}`}>{order.status}</span>
-                        </div>
-                        <p className="text-[var(--color-on-surface-variant)] text-sm font-medium mb-3">{order.date}</p>
-                      </div>
-                      <p className="text-xl font-extrabold">${order.total.toFixed(2)}</p>
+            {loading ? (
+              <div className="flex flex-col gap-6">
+                {[1, 2].map(n => (
+                  <div key={n} className="h-48 rounded-2xl bg-[var(--color-surface-container-low)] animate-pulse" />
+                ))}
+              </div>
+            ) : history.length === 0 ? (
+              <div className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-12 text-center">
+                <p className="text-[var(--color-on-surface-variant)]">No orders yet. Time to start feasting!</p>
+              </div>
+            ) : (
+              history.map(order => (
+                <div
+                  key={order.id}
+                  onClick={() => navigate(`/order/${order.id}`)}
+                  className="bg-[var(--color-surface-container-lowest)] rounded-2xl p-6 shadow-[0_12px_32px_rgba(27,28,28,0.06)] group hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+                >
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="w-full md:w-32 h-32 rounded-xl overflow-hidden flex-shrink-0">
+                      <img alt={order.restaurantName} src={order.imageUrl} className="w-full h-full object-cover" />
                     </div>
-                    <p className="text-[var(--color-on-surface-variant)] text-sm line-clamp-1 mb-6">{order.itemsSummary}</p>
-                    <div className="flex items-center justify-between pt-4 border-t border-[var(--color-surface-container-high)]">
-                      <button className="text-[var(--color-primary)] font-bold text-sm flex items-center gap-1 hover:underline">
-                        <span className="material-symbols-outlined text-sm">receipt</span>
-                        View Receipt
-                      </button>
-                      {order.status === 'Cancelled' ? (
-                        <button className="bg-[var(--color-surface-container-high)] text-[var(--color-on-surface)] px-6 py-2.5 rounded-full font-bold text-sm flex items-center gap-2">
-                          <span className="material-symbols-outlined text-base">support</span>
-                          Get Help
+                    <div className="flex-grow">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-xl font-bold" style={{ fontFamily: 'var(--font-headline)' }}>{order.restaurantName}</h3>
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider ${statusStyle[order.status] || 'bg-gray-100'}`}>{order.status}</span>
+                          </div>
+                          <p className="text-[var(--color-on-surface-variant)] text-sm font-medium mb-3">{order.date}</p>
+                        </div>
+                        <p className="text-xl font-extrabold">${order.total.toFixed(2)}</p>
+                      </div>
+                      <p className="text-[var(--color-on-surface-variant)] text-sm line-clamp-1 mb-6">{order.itemsSummary}</p>
+                      <div className="flex items-center justify-between pt-4 border-t border-[var(--color-surface-container-high)]">
+                        <button className="text-[var(--color-primary)] font-bold text-sm flex items-center gap-1 hover:underline">
+                          <span className="material-symbols-outlined text-sm">receipt</span>
+                          View Details
                         </button>
-                      ) : (
                         <button
                           className="text-[var(--color-on-primary)] px-6 py-2.5 rounded-full font-bold text-sm shadow-md hover:scale-105 transition-transform flex items-center gap-2"
                           style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container))' }}
@@ -78,12 +144,12 @@ export default function OrderHistoryPage() {
                           <span className="material-symbols-outlined text-base">refresh</span>
                           Re-order
                         </button>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           {/* Sidebar */}

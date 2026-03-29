@@ -135,7 +135,7 @@ export default function CheckoutPage() {
     voucherCode, setVoucherCode,
     voucherApplied, applyVoucher,
     deliveryNotes, setDeliveryNotes,
-    isPlacingOrder, orderPlaced, placeOrder,
+    isPlacingOrder, orderPlaced, orderId, placeOrder,
   } = useCheckout();
 
   const { state, clearCart } = useCart();
@@ -151,14 +151,14 @@ export default function CheckoutPage() {
   const discount = voucherApplied ? 5.00 : 0;
   const total = subtotal + serviceFee - discount;
 
-  if (orderPlaced) {
+  if (orderPlaced && orderId) {
     return (
       <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-[100]">
         <span className="material-symbols-outlined text-8xl text-[var(--color-primary)] fill-icon mb-6">check_circle</span>
         <h2 className="font-black text-3xl text-[var(--color-on-surface)] mb-2" style={{ fontFamily: 'var(--font-headline)' }}>Order Placed!</h2>
         <p className="text-[var(--color-on-surface-variant)] mb-8">Your feast is being prepared.</p>
         <button
-          onClick={() => navigate('/order/FF-92841/tracking')}
+          onClick={() => navigate(`/order/${orderId}/tracking`)}
           className="px-8 py-4 rounded-full font-black text-white"
           style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container))', fontFamily: 'var(--font-headline)' }}
         >
@@ -167,6 +167,36 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
+  const handlePlaceOrder = async () => {
+    const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+    const selectedPayment = paymentMethods.find(p => p.id === selectedPaymentId);
+    const addressString = selectedAddress ? `${selectedAddress.line1}, ${selectedAddress.line2}` : 'Unknown Address';
+    const paymentString = selectedPayment ? selectedPayment.name : 'Credit Card';
+
+    const orderData = {
+      subtotal,
+      delivery_fee: 0,
+      service_fee: serviceFee,
+      discount,
+      total_amount: total,
+      delivery_address: addressString,
+      notes: deliveryNotes,
+      payment_method: paymentString,
+      items: state.items.map(item => ({
+        item_name: item.name,
+        quantity: item.quantity,
+        unit_price: item.basePrice,
+        image_url: item.image
+      }))
+    };
+
+    try {
+      await placeOrder(orderData);
+    } catch (err) {
+      alert('Failed to place order. Please try again.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
@@ -339,7 +369,7 @@ export default function CheckoutPage() {
                   <span className="font-extrabold text-2xl text-[var(--color-primary)]" style={{ fontFamily: 'var(--font-headline)' }}>${total.toFixed(2)}</span>
                 </div>
                 <button
-                  onClick={placeOrder}
+                  onClick={handlePlaceOrder}
                   disabled={isPlacingOrder}
                   className="w-full py-5 text-white font-black text-lg rounded-2xl shadow-[0_8px_20px_rgba(178,34,4,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70"
                   style={{

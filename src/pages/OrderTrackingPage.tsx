@@ -1,8 +1,105 @@
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
-import { trackingSteps, cartItems } from '../data/mockData';
+import { trackingSteps as mockSteps } from '../data/mockData';
+import { supabase } from '../lib/supabase';
+
+interface Order {
+  id: string;
+  status: string;
+  total_amount: number;
+  created_at: string;
+}
+
+interface OrderItem {
+  id: string;
+  item_name: string;
+  quantity: number;
+  unit_price: number;
+  image_url: string;
+}
 
 export default function OrderTrackingPage() {
+  const { id } = useParams();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [items, setItems] = useState<OrderItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchOrderData() {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        // Fetch order
+        const { data: orderData, error: orderErr } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('id', id)
+          .single();
+        
+        if (orderErr) throw orderErr;
+        setOrder(orderData);
+
+        // Fetch items
+        const { data: itemsData, error: itemsErr } = await supabase
+          .from('order_items')
+          .select('*')
+          .eq('order_id', id);
+        
+        if (itemsErr) throw itemsErr;
+        setItems(itemsData || []);
+      } catch (err) {
+        console.error('Error fetching order:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrderData();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[var(--color-background)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-primary)]" />
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-[var(--color-background)] flex flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold mb-4">Order Not Found</h1>
+        <button onClick={() => window.history.back()} className="text-[var(--color-primary)] font-bold">Go Back</button>
+      </div>
+    );
+  }
+
+  // Map database status to tracking steps
+  const currentStatus = order.status;
+  const steps = mockSteps.map((step, idx) => {
+    let status: 'done' | 'active' | 'pending' = 'pending';
+    
+    // Simplistic mapping for now
+    if (currentStatus === 'Pending') {
+      if (idx === 0) status = 'active';
+    } else if (currentStatus === 'Preparing') {
+      if (idx < 1) status = 'done';
+      if (idx === 1) status = 'active';
+    } else if (currentStatus === 'Delivering') {
+      if (idx < 3) status = 'done';
+      if (idx === 3) status = 'active';
+    } else if (currentStatus === 'Completed') {
+      status = 'done';
+    }
+    
+    return { ...step, status };
+  });
+
+  const displayId = order.id.slice(0, 8).toUpperCase();
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
       <TopNavBar />
@@ -12,15 +109,17 @@ export default function OrderTrackingPage() {
         <div className="lg:col-span-5 space-y-6">
           <section className="bg-[var(--color-surface-container-lowest)] p-8 rounded-2xl shadow-[0_12px_32px_rgba(27,28,28,0.06)] relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 opacity-5 rounded-bl-full" style={{ background: 'linear-gradient(135deg, #b22204, #d63c1e)' }} />
-            <h1 className="font-extrabold text-3xl tracking-tight mb-2" style={{ fontFamily: 'var(--font-headline)' }}>Arriving in 12 mins</h1>
+            <h1 className="font-extrabold text-3xl tracking-tight mb-2" style={{ fontFamily: 'var(--font-headline)' }}>
+              {currentStatus === 'Pending' ? 'Order Received' : 'Order in Progress'}
+            </h1>
             <p className="text-[var(--color-on-surface-variant)] text-sm mb-8 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
-              Order #FF-92841 from <span className="font-bold text-[var(--color-on-surface)] ml-1">Burger Theory Gourmet</span>
+              Order #{displayId} from <span className="font-bold text-[var(--color-on-surface)] ml-1">Urban Umami</span>
             </p>
 
             {/* Stepper */}
             <div className="relative space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-[var(--color-surface-container-high)]">
-              {trackingSteps.map(step => (
+              {steps.map(step => (
                 <div key={step.label} className="relative flex items-center gap-4">
                   {step.status === 'done' && (
                     <div className="z-10 w-6 h-6 rounded-full bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0">
@@ -53,20 +152,20 @@ export default function OrderTrackingPage() {
               <span className="text-[var(--color-primary)] font-bold text-sm cursor-pointer hover:underline">View Receipt</span>
             </div>
             <div className="space-y-4">
-              {cartItems.map(item => (
+              {items.map(item => (
                 <div key={item.id} className="flex items-center gap-4">
-                  <img alt={item.name} src={item.imageUrl} className="w-16 h-16 rounded-xl object-cover" />
+                  <img alt={item.item_name} src={item.image_url} className="w-16 h-16 rounded-xl object-cover" />
                   <div className="flex-1">
-                    <h4 className="font-bold text-sm">{item.quantity}x {item.name}</h4>
-                    <p className="text-xs text-[var(--color-on-surface-variant)]">{item.notes}</p>
+                    <h4 className="font-bold text-sm">{item.quantity}x {item.item_name}</h4>
+                    <p className="text-xs text-[var(--color-on-surface-variant)]">Default Options</p>
                   </div>
-                  <span className="font-bold text-sm">${item.price.toFixed(2)}</span>
+                  <span className="font-bold text-sm">${(item.unit_price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
             <div className="mt-6 pt-6 border-t border-[var(--color-outline-variant)]/20 flex justify-between">
               <span className="text-[var(--color-on-surface-variant)] font-medium">Total (Incl. delivery)</span>
-              <span className="font-extrabold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>$27.40</span>
+              <span className="font-extrabold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>${order.total_amount.toFixed(2)}</span>
             </div>
           </section>
         </div>
