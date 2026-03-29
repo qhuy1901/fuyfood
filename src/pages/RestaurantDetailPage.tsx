@@ -59,8 +59,8 @@ export default function RestaurantDetailPage() {
               <h1 className="font-black text-3xl md:text-6xl tracking-tight mb-1" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h1>
               <p className="text-white/80 font-medium flex items-center gap-4 text-sm md:text-base flex-wrap">
                 <span>Japanese Fusion • Ramen • Sushi</span>
-                <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">schedule</span>15-25 min</span>
-                <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">distance</span>1.2 km</span>
+                <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">schedule</span>10-15 min</span>
+                <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">distance</span>0.2 km</span>
               </p>
             </div>
             <div className="flex gap-3">
@@ -85,11 +85,10 @@ export default function RestaurantDetailPage() {
                   <button
                     key={label}
                     onClick={() => setActiveSection(key)}
-                    className={`whitespace-nowrap px-6 py-3 rounded-full font-bold text-sm text-left transition-all ${
-                      activeSection === key
+                    className={`whitespace-nowrap px-6 py-3 rounded-full font-bold text-sm text-left transition-all ${activeSection === key
                         ? 'bg-[var(--color-primary)] text-white shadow-lg'
                         : 'bg-[var(--color-surface-container-high)] text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container-highest)]'
-                    }`}
+                      }`}
                     style={{ fontFamily: 'var(--font-headline)' }}
                   >
                     {label}

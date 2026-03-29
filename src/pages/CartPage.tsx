@@ -3,12 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function CartPage() {
   const navigate = useNavigate();
   const { state, updateQty, removeItem, clearCart } = useCart();
+  const { user, openLoginModal } = useAuth();
   const items = state.items;
   const [note, setNote] = useState('');
+
+  const handleCheckout = () => {
+    if (!user) {
+      openLoginModal({
+        title: 'Login To Checkout',
+        message: 'Please log in to proceed with checkout and complete your order.',
+        redirectTo: '/checkout'
+      });
+      return;
+    }
+    navigate('/checkout');
+  };
 
   const handleUpdateQty = (cartItemId: string, delta: number) => {
     const item = items.find(item => item.cartItemId === cartItemId);
@@ -71,7 +85,7 @@ export default function CartPage() {
                   </div>
                   <div>
                     <h2 className="font-bold text-xl" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h2>
-                    <p className="text-[var(--color-on-surface-variant)] text-sm">Japanese Fusion • Ramen • Sushi • 1.2 km</p>
+                    <p className="text-[var(--color-on-surface-variant)] text-sm">Japanese Fusion • Ramen • Sushi • 0.2 km</p>
                   </div>
                 </div>
 
@@ -170,7 +184,7 @@ export default function CartPage() {
                     </span>
                   </div>
                   <button
-                    onClick={() => navigate('/checkout')}
+                    onClick={handleCheckout}
                     className="w-full py-5 text-white font-black text-lg rounded-2xl shadow-[0_8px_20px_rgba(178,34,4,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
                     style={{
                       background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container))',
@@ -214,7 +228,7 @@ export default function CartPage() {
             <span className="text-xs text-[var(--color-on-surface-variant)]">{itemCount} Items</span>
           </div>
           <button
-            onClick={() => navigate('/checkout')}
+            onClick={handleCheckout}
             className="w-full text-white py-5 rounded-full font-black text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-3"
             style={{
               background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-container))',

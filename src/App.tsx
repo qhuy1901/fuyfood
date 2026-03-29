@@ -8,8 +8,12 @@ import OrderHistoryPage from './pages/OrderHistoryPage';
 import RestaurantListPage from './pages/RestaurantListPage';
 import CartPage from './pages/CartPage';
 import NearbyRestaurantsPage from './pages/NearbyRestaurantsPage';
+import LoginModal from './components/shared/LoginModal';
+import { useAuth } from './context/AuthContext';
 
 export default function App() {
+  const { isLoginModalOpen, closeLoginModal } = useAuth();
+
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -24,6 +28,7 @@ export default function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/nearby" element={<NearbyRestaurantsPage />} />
       </Routes>
+      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </BrowserRouter>
   );
 }

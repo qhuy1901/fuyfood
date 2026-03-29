@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useLocation as useUserLocation } from '../../hooks/useLocation';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface TopNavBarProps {
   readonly simplified?: boolean;
@@ -18,6 +19,8 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
   const { state } = useCart();
   const cartCount = state.totalItems;
   const location = useLocation();
+  const { openLoginModal, user, loading: authLoading, signOut } = useAuth();
+  
   const activeNav = (path: string) =>
     location.pathname === path
       ? 'text-orange-600 border-b-2 border-orange-600 pb-1'
@@ -91,23 +94,61 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
               <span className="text-xs font-bold">{actionButton.label}</span>
             </button>
           )}
-          {!simplified && (
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary-fixed)]">
-              <img
-                alt="User profile"
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRjDkTopnBnRbIM1cATM9hTXk_UOVzj1W1MgL2WjpelbxD7TkaTNGE8xv6CzA_q869milMn3KZWGFb8nN1RIbcTIucfEUrrJQNmuInp3vjFuK8uxEfkECan__IgQoeI14LuXukYM4ecWfVanvVgLgVSG-g1EG8CnJ-y2egbgAa-NEBU1tQ2MhzgDZkhKtqs0E7lNtCML1ZxmNcZQ3CZUWZbAgi_Ok_mMqUanhULU-I5pEnpb2JUor5PdxCfye5OA0bmDiFqXTaC8C0"
-              />
+
+          {authLoading ? (
+            <div className="w-10 h-10 rounded-full bg-neutral-100 animate-pulse ml-2" />
+          ) : user ? (
+            <div className="group relative ml-2">
+              <button className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary)] transition-transform hover:scale-105 active:scale-95">
+                <img
+                  alt={user.user_metadata.full_name || 'User'}
+                  className="w-full h-full object-cover"
+                  src={user.user_metadata.avatar_url || 'https://lh3.googleusercontent.com/a/default-user=s96-c'}
+                />
+              </button>
+              {/* Dropdown Menu */}
+              <div className="absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-neutral-50 z-[100] translate-y-2 group-hover:translate-y-0">
+                <div className="px-5 py-3 border-b border-neutral-50 mb-2">
+                  <p className="text-sm font-black text-neutral-800 truncate" style={{ fontFamily: 'var(--font-headline)' }}>
+                    {user.user_metadata.full_name || 'Anonymous User'}
+                  </p>
+                  <p className="text-[11px] text-neutral-400 truncate mt-0.5">{user.email}</p>
+                </div>
+                
+                <div className="px-2 space-y-1">
+                  <Link to="/orders" className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
+                    <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-[var(--color-primary)] transition-colors">receipt_long</span>
+                    <span className="font-bold">My Orders</span>
+                  </Link>
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
+                    <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-[var(--color-primary)] transition-colors">settings</span>
+                    <span className="font-bold">Account Settings</span>
+                  </button>
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl transition-colors flex items-center gap-3 group/item">
+                    <span className="material-symbols-outlined text-xl text-neutral-400 group-hover/item:text-orange-500 transition-colors">card_membership</span>
+                    <span className="font-bold">FuyFood Pro</span>
+                  </button>
+                </div>
+
+                <div className="mt-2 pt-2 border-t border-neutral-50 px-2">
+                  <button 
+                    onClick={() => signOut()}
+                    className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-3 group/signout"
+                  >
+                    <span className="material-symbols-outlined text-xl text-red-400 group-hover/signout:text-red-600 transition-colors">logout</span>
+                    <span className="font-black">Sign Out</span>
+                  </button>
+                </div>
+              </div>
             </div>
-          )}
-          {simplified && (
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--color-primary-fixed)]">
-              <img
-                alt="User profile"
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRjDkTopnBnRbIM1cATM9hTXk_UOVzj1W1MgL2WjpelbxD7TkaTNGE8xv6CzA_q869milMn3KZWGFb8nN1RIbcTIucfEUrrJQNmuInp3vjFuK8uxEfkECan__IgQoeI14LuXukYM4ecWfVanvVgLgVSG-g1EG8CnJ-y2egbgAa-NEBU1tQ2MhzgDZkhKtqs0E7lNtCML1ZxmNcZQ3CZUWZbAgi_Ok_mMqUanhULU-I5pEnpb2JUor5PdxCfye5OA0bmDiFqXTaC8C0"
-              />
-            </div>
+          ) : (
+            <button 
+              onClick={() => openLoginModal()}
+              className="px-5 py-2 font-bold text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-full transition-all active:scale-95 ml-2"
+              style={{ fontFamily: 'var(--font-headline)' }}
+            >
+              Sign In
+            </button>
           )}
         </div>
       </div>

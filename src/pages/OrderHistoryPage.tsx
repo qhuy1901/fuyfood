@@ -22,11 +22,11 @@ export default function OrderHistoryPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
           <div>
-            <nav className="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm mb-2">
+            {/* <nav className="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm mb-2">
               <span>Account</span>
               <span className="material-symbols-outlined text-xs">chevron_right</span>
               <span className="text-[var(--color-primary)] font-semibold">Order History</span>
-            </nav>
+            </nav> */}
             <h1 className="text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-headline)' }}>Your past cravings</h1>
             <p className="text-[var(--color-on-surface-variant)] mt-2">Everything you've enjoyed from FuyFood, in one place.</p>
           </div>
