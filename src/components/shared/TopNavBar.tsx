@@ -52,6 +52,7 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
       navigate('/');
     } catch (error) {
       console.error('Sign out failed:', error);
+    } finally {
       setIsSigningOut(false);
     }
   };

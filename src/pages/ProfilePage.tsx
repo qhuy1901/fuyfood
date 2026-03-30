@@ -123,8 +123,14 @@ export default function ProfilePage() {
           <button
             onClick={async () => {
               setIsSigningOut(true);
-              await signOut();
-              navigate('/');
+              try {
+                await signOut();
+                navigate('/');
+              } catch (error) {
+                console.error('Sign out failed:', error);
+              } finally {
+                setIsSigningOut(false);
+              }
             }}
             disabled={isSigningOut}
             className="px-6 py-2.5 rounded-full border border-red-100 text-red-500 font-bold text-sm hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
