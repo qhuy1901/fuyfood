@@ -14,6 +14,7 @@ interface ProfileOrder extends OrderHistoryItem {
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const [orders, setOrders] = useState<ProfileOrder[]>([]);
   const [addresses, setAddresses] = useState<Address[]>(mockAddresses);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
@@ -120,10 +121,15 @@ export default function ProfilePage() {
             </div>
           </div>
           <button
-            onClick={() => signOut()}
-            className="px-6 py-2.5 rounded-full border border-red-100 text-red-500 font-bold text-sm hover:bg-red-50 transition-colors"
+            onClick={async () => {
+              setIsSigningOut(true);
+              await signOut();
+              navigate('/');
+            }}
+            disabled={isSigningOut}
+            className="px-6 py-2.5 rounded-full border border-red-100 text-red-500 font-bold text-sm hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign Out
+            {isSigningOut ? 'Signing Out...' : 'Sign Out'}
           </button>
         </div>
 

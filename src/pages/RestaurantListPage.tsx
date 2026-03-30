@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLocation } from '../hooks/useLocation';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
+import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 import { popularRestaurants } from '../data/mockData';
 
 // ---- Data (extracted from Stitch HTML) ----
@@ -63,10 +65,11 @@ export default function RestaurantListPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { locationText, loadingLocation } = useLocation();
+  const { user, openLoginModal } = useAuth();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const categoryFilter = searchParams.get('category');
 
   const [activeFilter, setActiveFilter] = useState('Distance');
-  const [favourites, setFavourites] = useState<Set<string>>(new Set());
   const searchQuery = searchParams.get('search')?.trim();
   const normalizedSearch = searchQuery?.toLowerCase() ?? '';
 
@@ -99,13 +102,15 @@ export default function RestaurantListPage() {
     return [...matched, ...supplement].slice(0, 5);
   })();
 
-  const toggleFav = (id: string, e: React.MouseEvent) => {
+  const handleWishlistClick = async (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setFavourites(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
+
+    if (!user) {
+      openLoginModal();
+      return;
+    }
+
+    await toggleWishlist(id);
   };
 
   return (
@@ -217,12 +222,12 @@ export default function RestaurantListPage() {
 
                 {/* Favourite button */}
                 <button
-                  onClick={e => toggleFav(restaurant.id, e)}
+                  onClick={e => handleWishlistClick(restaurant.id, e)}
                   className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-all hover:scale-110 active:scale-90"
                 >
                   <span
                     className={`material-symbols-outlined text-[20px] transition-colors ${
-                      favourites.has(restaurant.id) ? 'text-[var(--color-primary)] fill-icon' : 'text-[var(--color-on-surface)]'
+                      isInWishlist(restaurant.id) ? 'text-[var(--color-primary)] fill-icon' : 'text-[var(--color-on-surface)]'
                     }`}
                   >
                     favorite

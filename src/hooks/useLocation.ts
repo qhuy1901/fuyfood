@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export function useLocation() {
   const [locationText, setLocationText] = useState(
-    'San Francisco, 123 Market St, Suite 400, Fisherman\'s Wharf, CA 94103'
+    '2-17-8 Kabukicho, Tower B 1205, Shinjuku District, Tokyo 160-0021'
   );
   const [loadingLocation, setLoadingLocation] = useState(true);
 
@@ -21,9 +21,14 @@ export function useLocation() {
           if (res.ok) {
             const data = await res.json();
             const place = data?.address;
+            const displayName = data?.display_name;
             let parts: string[] = [];
 
-            if (place) {
+            if (displayName) {
+              // Use display_name as a fallback if specific parts are missing
+              setLocationText(displayName);
+            }
+            else if (place) {
               // Prioritize: road/building, suburb/district, city, state
               const road = place.road || place.pedestrian || place.footway || place.neighbourhood;
               const house = place.house_number;
@@ -48,16 +53,14 @@ export function useLocation() {
               if (state && state !== city) {
                 parts.push(state);
               }
-            }
-
-            if (parts.length > 0) {
-              setLocationText(parts.join(', '));
+              if (parts.length > 0) {
+                setLocationText(parts.join(', '));
+              }
             }
           }
         } catch (error) {
           console.warn('Reverse geocode error:', error);
         }
-
         setLoadingLocation(false);
       },
       (error) => {

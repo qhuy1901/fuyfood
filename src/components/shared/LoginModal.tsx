@@ -18,10 +18,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleGoogleSignIn = async () => {
     try {
       setIsSigningIn(true);
-      const redirectTo = loginModalConfig?.redirectTo 
-        ? window.location.origin + loginModalConfig.redirectTo 
-        : window.location.origin;
-        
+      const redirectTo = loginModalConfig?.redirectTo
+        ? loginModalConfig.redirectTo.startsWith('http')
+          ? loginModalConfig.redirectTo
+          : window.location.origin + loginModalConfig.redirectTo
+        : window.location.href;
+
       await signInWithGoogle({ redirectTo });
     } catch (error) {
       console.error('Error signing in with Google:', error);

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLocation as useUserLocation } from '../../hooks/useLocation';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -20,7 +20,9 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
   const { state } = useCart();
   const cartCount = state.totalItems;
   const location = useLocation();
+  const navigate = useNavigate();
   const { openLoginModal, user, loading: authLoading, signOut } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
   
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -41,8 +43,22 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleSignOut = async () => {
+    setShowDropdown(false);
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Sign out failed:', error);
+      setIsSigningOut(false);
+    }
+  };
+
   return (
-    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm glass-header">
+    <>
+      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm glass-header">
       <div className="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
         {/* Left */}
         <div className="flex items-center gap-4">
@@ -148,11 +164,8 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
 
                 <div className="mt-2 pt-2 border-t border-neutral-50 px-2">
                   <button
-                    onClick={() => {
-                      setShowDropdown(false);
-                      signOut();
-                    }}
-                    className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-3 group/signout"
+                    onClick={handleSignOut}
+                  className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-3 group/signout"
                   >
                     <span className="material-symbols-outlined text-xl text-red-400 group-hover/signout:text-red-600 transition-colors">logout</span>
                     <span className="font-black">Sign Out</span>
@@ -172,5 +185,15 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
         </div>
       </div>
     </header>
+    {isSigningOut && (
+      <div className="fixed inset-0 z-[120] bg-white/90 backdrop-blur-sm flex items-center justify-center px-4">
+        <div className="rounded-3xl bg-white shadow-2xl p-8 text-center max-w-sm w-full">
+          <div className="mx-auto mb-6 w-16 h-16 rounded-full border-4 border-[var(--color-primary)] border-t-transparent animate-spin" />
+          <h2 className="text-xl font-black mb-2" style={{ fontFamily: 'var(--font-headline)' }}>Signing out</h2>
+          <p className="text-sm text-[var(--color-on-surface-variant)]">You are being signed out and will be redirected to the home page.</p>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

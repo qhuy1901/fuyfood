@@ -379,7 +379,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '16-26 min',
     distance: '0.7 km',
     imageUrl: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c',
-    tags: ['Free Shipping'],
+    tags: ['Free Shipping', 'Dumplings'],
     isFreeShipping: true,
   },
   {
@@ -400,7 +400,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '12-22 min',
     distance: '1.4 km',
     imageUrl: 'https://dallas.culturemap.com/media-library/sandwich-spot.webp?id=50444596&width=2000&height=1500&coordinates=0%2C16%2C0%2C16',
-    tags: ['Promo'],
+    tags: ['Promo', 'Sandwiches', 'Wraps', 'Drinks'],
     isPromo: true,
   },
   {
@@ -433,7 +433,8 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '15-25 min',
     distance: '0.9 km',
     imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
-    tags: [],
+    tags: ['Bento', 'Rice', 'Promo', 'Drinks'],
+    isPromo: true,
   },
   {
     id: 'r22',
@@ -443,7 +444,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '18-28 min',
     distance: '2.1 km',
     imageUrl: 'https://images.unsplash.com/photo-1525351484163-7529414344d8',
-    tags: ['Promo'],
+    tags: ['Breakfast', 'Bakery', 'Promo'],
     isPromo: true,
   },
   {
@@ -454,7 +455,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '10-20 min',
     distance: '0.8 km',
     imageUrl: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add',
-    tags: [],
+    tags: ['Fast Food', 'Burgers', 'Fries'],
   },
   {
     id: 'r24',
@@ -475,7 +476,8 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '8-18 min',
     distance: '0.6 km',
     imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/03/85/94/ed/snack-shack.jpg?w=900&h=500&s=1',
-    tags: [],
+    tags: ['Snack', 'Promo'],
+    isPromo: true,
   },
   {
     id: 'r26',
@@ -485,7 +487,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '20-30 min',
     distance: '1.9 km',
     imageUrl: 'https://images.unsplash.com/photo-1559847844-5315695dadae',
-    tags: ['Top Rated'],
+    tags: ['Noodles', 'Top Rated'],
     isTopRated: true,
   },
   {
@@ -496,7 +498,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '22-32 min',
     distance: '1.4 km',
     imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999',
-    tags: ['Free Shipping', 'Promo'],
+    tags: ['Free Shipping', 'Promo', 'Healthy'],
     isFreeShipping: true,
     isPromo: true,
   },
@@ -508,7 +510,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '18-28 min',
     distance: '1.0 km',
     imageUrl: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9',
-    tags: [],
+    tags: ['BBQ'],
   },
   {
     id: 'r29',
@@ -518,7 +520,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '20-30 min',
     distance: '1.1 km',
     imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
-    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks', 'Healthy', 'Pizza', 'Dessert', 'Bakery', 'Sushi', 'Burgers', 'Tacos', 'Steak', 'Chicken', 'BBQ', 'Seafood', 'Dumplings', 'Pasta', 'Sandwiches', 'Hot Pot', 'Curry', 'Bento', 'Breakfast', 'Fast Food', 'Soft Drinks'],
+    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks','Dessert','Sushi', 'Burgers', 'Steak', 'Chicken', 'BBQ', 'Seafood', 'Hot Pot', 'Breakfast', 'Fast Food', 'Soft Drinks'],
     isFreeShipping: true,
     isPromo: true,
   },
@@ -529,8 +531,8 @@ export const popularRestaurants: Restaurant[] = [
     rating: 4.8,
     deliveryTime: '18-28 min',
     distance: '0.9 km',
-    imageUrl: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9',
-    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks', 'Healthy', 'Pizza', 'Dessert', 'Bakery', 'Sushi', 'Burgers', 'Tacos', 'Steak', 'Chicken', 'BBQ', 'Seafood', 'Dumplings', 'Pasta', 'Sandwiches', 'Hot Pot', 'Curry', 'Bento', 'Breakfast', 'Fast Food', 'Soft Drinks'],
+    imageUrl: 'https://collective.oddle.me/_next/image?url=https%3A%2F%2Fucarecdn.com%2Fb972cde3-d894-40e7-9d23-3d596bd6df70%2F-%2Fcrop%2F2664x1108%2F3%2C1634%2F-%2Fpreview%2F&w=3840&q=75',
+    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks', 'Dessert', 'Bakery', 'Sushi', 'Burgers', 'Tacos', 'Steak', 'Chicken', 'BBQ', 'Seafood', 'Sandwiches', 'Hot Pot', 'Breakfast', 'Fast Food', 'Soft Drinks'],
     isFreeShipping: true,
   },
   {
@@ -541,7 +543,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '15-25 min',
     distance: '0.7 km',
     imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks', 'Healthy', 'Pizza', 'Dessert', 'Bakery', 'Sushi', 'Burgers', 'Tacos', 'Steak', 'Chicken', 'BBQ', 'Seafood', 'Dumplings', 'Pasta', 'Sandwiches', 'Hot Pot', 'Curry', 'Bento', 'Breakfast', 'Fast Food', 'Soft Drinks'],
+    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks', 'Sushi', 'Burgers', 'Steak', 'BBQ', 'Seafood', 'Dumplings', 'Pasta', 'Sandwiches', 'Hot Pot', 'Breakfast', 'Fast Food', 'Soft Drinks'],
     isPromo: true,
   },
   {
@@ -552,7 +554,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '22-32 min',
     distance: '1.0 km',
     imageUrl: 'https://vcdn1-dulich.vnecdn.net/2024/04/15/IMG-0260_1713193325.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=5d-v9uKcsUkB32PMDEryJg',
-    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks', 'Healthy', 'Pizza', 'Dessert', 'Bakery', 'Sushi', 'Burgers', 'Tacos', 'Steak', 'Chicken', 'BBQ', 'Seafood', 'Dumplings', 'Pasta', 'Sandwiches', 'Hot Pot', 'Curry', 'Bento', 'Breakfast', 'Fast Food', 'Soft Drinks'],
+    tags: ['Snacks', 'Hot Pot', 'Curry', 'Bento'],
     isFreeShipping: true,
   },
   {
@@ -563,7 +565,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '25-35 min',
     distance: '1.3 km',
     imageUrl: 'https://images.unsplash.com/photo-1478145046317-39f10e56b5e9',
-    tags: ['Rice', 'Noodles', 'Drinks', 'Snacks', 'Healthy', 'Pizza', 'Dessert', 'Bakery', 'Sushi', 'Burgers', 'Tacos', 'Steak', 'Chicken', 'BBQ', 'Seafood', 'Dumplings', 'Pasta', 'Sandwiches', 'Hot Pot', 'Curry', 'Bento', 'Breakfast', 'Fast Food', 'Soft Drinks'],
+    tags: ['Healthy', 'Pizza', 'Dessert', 'Bakery', 'Breakfast', 'Fast Food'],
     isPromo: true,
   },
   {
@@ -629,7 +631,7 @@ export const popularRestaurants: Restaurant[] = [
     deliveryTime: '17-27 min',
     distance: '0.9 km',
     imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60',
-    tags: ['Drinks', 'Bakery', 'Dessert'],
+    tags: ['Drinks', 'Bakery', 'Dessert', 'Healthy'],
     isPromo: true,
   },
   {

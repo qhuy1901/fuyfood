@@ -136,7 +136,7 @@ export default function OrderDetailsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
-      <TopNavBar simplified pageTitle="Order Details" />
+      <TopNavBar />
 
       <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8 pb-40">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

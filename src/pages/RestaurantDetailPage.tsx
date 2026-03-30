@@ -4,6 +4,8 @@ import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
 import ImageWithFallback from '../components/shared/ImageWithFallback';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 import { triggerFlyToCartAnimation } from '../utils/animations';
 import { urbanUmamiMenu, urbanUmamiReviews, type MenuItem } from '../data/mockData';
 import CustomerReviews from '../components/CustomerReviews';
@@ -13,9 +15,24 @@ const menuSections = ['Popular Now', 'Sushi Rolls', 'Signature Ramen', 'Appetize
 export default function RestaurantDetailPage() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('Popular Now');
+  const { user, openLoginModal } = useAuth();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const { state, addItem } = useCart();
   const restaurantId = 'urban-umami';
   const restaurantName = 'Urban Umami';
+
+  const handleWishlistToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
+    if (!user) {
+      openLoginModal();
+      return;
+    }
+
+    await toggleWishlist(restaurantId);
+  };
+
+  const isFavorited = isInWishlist(restaurantId);
 
   const handleAdd = (e: React.MouseEvent, item: MenuItem) => {
     e.stopPropagation();
@@ -65,8 +82,15 @@ export default function RestaurantDetailPage() {
               </p>
             </div>
             <div className="flex gap-3">
-              <button className="bg-white/20 backdrop-blur-md text-white p-4 rounded-full hover:bg-white/30 transition-all active:scale-95">
-                <span className="material-symbols-outlined fill-icon">favorite</span>
+              <button
+                type="button"
+                onClick={handleWishlistToggle}
+                className="bg-white/20 backdrop-blur-md text-white p-4 rounded-full hover:bg-white/30 transition-all active:scale-95"
+                aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                <span className={`material-symbols-outlined transition-colors ${isFavorited ? 'text-[var(--color-primary)] fill-icon' : 'text-white'}`}>
+                  favorite
+                </span>
               </button>
               <button className="bg-white/20 backdrop-blur-md text-white p-4 rounded-full hover:bg-white/30 transition-all active:scale-95">
                 <span className="material-symbols-outlined">share</span>
