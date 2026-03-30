@@ -271,10 +271,14 @@ export default function OrderTrackingPage() {
                 <span className="material-symbols-outlined text-lg fill-icon">chat</span>
                 Message
               </button>
-              <button className="flex items-center gap-2 px-6 py-3 text-white rounded-full font-bold text-sm shadow-md active:scale-95 transition-transform" style={{ background: 'linear-gradient(135deg, #b22204, #d63c1e)' }}>
+              <a
+                href="tel:+84365990290"
+                className="flex items-center gap-2 px-6 py-3 text-white rounded-full font-bold text-sm shadow-md active:scale-95 transition-transform"
+                style={{ background: 'linear-gradient(135deg, #b22204, #d63c1e)' }}
+              >
                 <span className="material-symbols-outlined text-lg fill-icon">call</span>
                 Call Driver
-              </button>
+              </a>
             </div>
           </section>
         </div>

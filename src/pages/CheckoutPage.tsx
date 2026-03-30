@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../components/shared/TopNavBar';
 import BottomNavBar from '../components/shared/BottomNavBar';
-import { addresses, paymentMethods, vouchers } from '../data/mockData';
+import { addresses, paymentMethods, vouchers, type Address } from '../data/mockData';
 import { useCheckout } from '../hooks/useCheckout';
 import { useCart, type CartItem } from '../context/CartContext';
+import { useLocation } from '../hooks/useLocation';
 
 // ── Sub-component: STORE + ORDERED ITEMS ──────────────────────────────────────
 function StoreOrderedItems({ items }: { items: CartItem[] }) {
@@ -155,7 +156,15 @@ export default function CheckoutPage() {
     deliveryNotes, setDeliveryNotes,
     isPlacingOrder, orderPlaced, orderId, placeOrder,
   } = useCheckout();
+  const { locationText, hasLocation } = useLocation();
   const { state, clearCart } = useCart();
+  const [autoSelectedCurrentLocation, setAutoSelectedCurrentLocation] = useState(false);
+  const hasUserSelectedAddress = useRef(false);
+
+  const handleAddressClick = (id: string) => {
+    hasUserSelectedAddress.current = true;
+    setAddress(id);
+  };
 
   // Sync note from cart on mount
   useEffect(() => {
@@ -170,8 +179,34 @@ export default function CheckoutPage() {
     }
   }, [orderPlaced, clearCart]);
 
+  useEffect(() => {
+    if (
+      hasLocation &&
+      !autoSelectedCurrentLocation &&
+      !hasUserSelectedAddress.current &&
+      selectedAddressId === 'a1'
+    ) {
+      setAddress('current-location');
+      setAutoSelectedCurrentLocation(true);
+    }
+  }, [hasLocation, autoSelectedCurrentLocation, selectedAddressId, setAddress]);
+
   const subtotal = state.totalPrice;
   const serviceFee = 1.20;
+
+  const currentLocationAddress: Address | null = hasLocation ? {
+    id: 'current-location',
+    type: 'other',
+    label: 'Current Location',
+    line1: locationText,
+    line2: 'Delivered to your current address',
+    icon: 'my_location'
+  } : null;
+
+  const deliveryAddresses = useMemo(
+    () => (currentLocationAddress ? [currentLocationAddress, ...addresses] : addresses),
+    [currentLocationAddress]
+  );
   
   // Dynamic discount calculation
   let discount = 0;
@@ -205,7 +240,7 @@ export default function CheckoutPage() {
   }
 
   const handlePlaceOrder = async () => {
-    const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+    const selectedAddress = deliveryAddresses.find(a => a.id === selectedAddressId);
     const selectedPayment = paymentMethods.find(p => p.id === selectedPaymentId);
     const addressString = selectedAddress ? `${selectedAddress.line1}, ${selectedAddress.line2}` : 'Unknown Address';
     const paymentString = selectedPayment ? selectedPayment.name : 'Credit Card';
@@ -252,12 +287,12 @@ export default function CheckoutPage() {
                 <button className="text-[var(--color-primary)] font-bold text-sm px-4 py-2 hover:bg-[var(--color-primary-fixed)] rounded-full transition-all">EDIT</button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {addresses.map(addr => (
+              <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                {deliveryAddresses.map(addr => (
                   <div
                     key={addr.id}
-                    onClick={() => setAddress(addr.id)}
-                    className={`relative p-5 rounded-2xl cursor-pointer transition-all ${selectedAddressId === addr.id
+                    onClick={() => handleAddressClick(addr.id)}
+                    className={`min-w-[18rem] flex-0 p-5 rounded-2xl cursor-pointer transition-all ${selectedAddressId === addr.id
                         ? 'bg-[var(--color-primary-fixed)] border-2 border-[var(--color-primary-container)]'
                         : 'bg-[var(--color-surface-container-low)] hover:bg-[var(--color-surface-container-highest)] border-2 border-transparent'
                       }`}

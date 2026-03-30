@@ -5,6 +5,7 @@ export function useLocation() {
     '2-17-8 Kabukicho, Tower B 1205, Shinjuku District, Tokyo 160-0021'
   );
   const [loadingLocation, setLoadingLocation] = useState(true);
+  const [hasLocation, setHasLocation] = useState(false);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -27,6 +28,7 @@ export function useLocation() {
             if (displayName) {
               // Use display_name as a fallback if specific parts are missing
               setLocationText(displayName);
+              setHasLocation(true);
             }
             else if (place) {
               // Prioritize: road/building, suburb/district, city, state
@@ -55,6 +57,7 @@ export function useLocation() {
               }
               if (parts.length > 0) {
                 setLocationText(parts.join(', '));
+                setHasLocation(true);
               }
             }
           }
@@ -71,5 +74,5 @@ export function useLocation() {
     );
   }, []);
 
-  return { locationText, loadingLocation };
+  return { locationText, loadingLocation, hasLocation };
 }

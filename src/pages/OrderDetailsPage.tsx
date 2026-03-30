@@ -158,7 +158,7 @@ export default function OrderDetailsPage() {
                     <h1 className="text-3xl font-black mb-1" style={{ fontFamily: 'var(--font-headline)' }}>Urban Umami</h1>
                     <div className="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm">
                       <span className="material-symbols-outlined text-sm">location_on</span>
-                      <span>123 Gourmet Lane, Food District</span>
+                      <span>3-4-1 Tsuruma, Machida, Tokyo</span>
                     </div>
                     <p className="text-[var(--color-on-surface-variant)] text-xs mt-1 font-medium opacity-70 italic">Order #{order.id.slice(0, 8).toUpperCase()} • {dateStr}</p>
                   </div>
