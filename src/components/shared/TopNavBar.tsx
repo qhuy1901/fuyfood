@@ -91,7 +91,7 @@ export default function TopNavBar({ simplified = false, pageTitle, hideCartLink 
             <Link className={activeNav('/')} to="/">Explore</Link>
             <Link className={activeNav('/orders')} to="/orders">Orders</Link>
             <Link className={activeNav('/wishlist')} to="/wishlist">Wishlist</Link>
-            <a className="text-neutral-600 hover:text-neutral-900 transition-colors" href="#">Help</a>
+            <Link className={activeNav('/help')} to="/help">Support</Link>
           </nav>
         ) : (
           <div className="hidden md:flex items-center gap-8">

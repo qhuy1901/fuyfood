@@ -5,6 +5,7 @@ const tabs = [
   { label: 'Explore', icon: 'explore', path: '/' },
   { label: 'Wishlist', icon: 'favorite', path: '/wishlist' },
   { label: 'Orders', icon: 'receipt_long', path: '/orders' },
+  // { label: 'Support', icon: 'contact_support', path: '/help' },
   { label: 'Profile', icon: 'person', path: '/profile' },
 ];
 
@@ -21,11 +22,10 @@ export default function BottomNavBar() {
           <Link
             key={tab.label}
             to={tab.path}
-            className={`flex flex-col items-center justify-center px-5 py-2 transition-transform duration-200 active:scale-90 rounded-2xl ${tab.label === 'Cart' ? 'nav-cart-target ' : ''}${
-              isActive
-                ? 'bg-orange-50 text-orange-600'
-                : 'text-neutral-400 hover:text-orange-500'
-            }`}
+            className={`flex flex-col items-center justify-center px-5 py-2 transition-transform duration-200 active:scale-90 rounded-2xl ${tab.label === 'Cart' ? 'nav-cart-target ' : ''}${isActive
+              ? 'bg-orange-50 text-orange-600'
+              : 'text-neutral-400 hover:text-orange-500'
+              }`}
           >
             <div className="relative">
               <span
